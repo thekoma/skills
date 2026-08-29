@@ -237,7 +237,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/awesome-skills/code-review-skill.git
     branch: main
-    ref: 28e9182          # pinned; bump via reviewed PR
+    ref: 277f47930184          # pinned; bump via reviewed PR
     license: MIT
     path: .
     vendor: true
