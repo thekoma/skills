@@ -1,0 +1,264 @@
+# Provenance manifest for every skill this repo tracks.
+#
+# Derived from ~/.agents/.skill-lock.json (written by `npx skills`, the
+# vercel-labs/skills installer). Field names are kept identical to that
+# lockfile — source, sourceType, sourceUrl, skillPath, skillFolderHash — so
+# the two can be diffed without a translation layer.
+#
+# `ref` is a PINNED commit. Nothing upstream reaches a consumer until that ref
+# is bumped, and bumping it is a reviewed pull request. See README.md.
+
+version: 1
+generated: "2026-08-29"
+
+sources:
+
+  # --- ours -------------------------------------------------------------
+  # No upstream. This repo is where they live; edit them here.
+  - source: thekoma/skills
+    sourceType: ours
+    sourceUrl: https://github.com/thekoma/skills.git
+    license: MIT
+    path: skills
+    vendor: false   # already in-tree; nothing to materialise
+    skills:
+      - name: stop-slop
+        skillPath: skills/stop-slop/SKILL.md
+        summary: "Remove AI writing patterns from prose."
+      - name: image-generation
+        skillPath: skills/image-generation/SKILL.md
+        summary: "Subject-Context-Style prompt structuring for image models."
+
+  # --- ours, but owned by another repo ----------------------------------
+  # Written by us, living in the project they serve. Recorded for provenance
+  # only: moving them here would take them away from the repo that uses them.
+  - source: local/project-repos
+    sourceType: ours-external
+    license: unspecified
+    vendor: false
+    skills:
+      - name: design-avatar
+        skillPath: ~/src/avatar/.claude/skills/design-avatar/SKILL.md
+        note: "no git remote"
+      - name: clonare-voci-robot
+        skillPath: ~/src/valetudo/.claude/skills/clonare-voci-robot/SKILL.md
+        note: "no git remote"
+      - name: home-assistant-manager
+        skillPath: ~/src/ha_config/.claude/skills/home-assistant-manager/SKILL.md
+        note: "private Gitea"
+
+  # --- third party, vendored at a pinned ref -----------------------------
+  - source: openclaw/gogcli
+    sourceType: github
+    sourceUrl: https://github.com/openclaw/gogcli.git
+    branch: main
+    ref: be4037f7c8f6          # pinned; bump via reviewed PR
+    license: MIT
+    path: .agents/skills
+    vendor: true
+    skills:
+      - name: crabbox
+        skillPath: .agents/skills/crabbox/SKILL.md
+        skillFolderHash: 6c0019cb94bb0409ff5db80264f1587fa89c2c79
+      - name: gog
+        skillPath: .agents/skills/gog/SKILL.md
+        skillFolderHash: e6deffb38da479cac331ea08bad6be0c71d34635
+      - name: gog-admin
+        skillPath: .agents/skills/gog-admin/SKILL.md
+        skillFolderHash: 686d2a96eaa08d8b0af8cef691f310c19128a1a0
+      - name: gog-analytics
+        skillPath: .agents/skills/gog-analytics/SKILL.md
+        skillFolderHash: 84633d51c0566f1c170524f65228b01780d7524e
+      - name: gog-appscript
+        skillPath: .agents/skills/gog-appscript/SKILL.md
+        skillFolderHash: 6a581a3f741820bad55f55b24ae1abd9f46e31a0
+      - name: gog-calendar
+        skillPath: .agents/skills/gog-calendar/SKILL.md
+        skillFolderHash: 174cf4a546f5317dda2aa3944d24e64ee8b2f76f
+      - name: gog-chat
+        skillPath: .agents/skills/gog-chat/SKILL.md
+        skillFolderHash: 225e70797191acb693cdb10e3b6a49114a756ee3
+      - name: gog-classroom
+        skillPath: .agents/skills/gog-classroom/SKILL.md
+        skillFolderHash: 9626d1d3dc12131c12eec5ac9adcee7839f92a41
+      - name: gog-contacts
+        skillPath: .agents/skills/gog-contacts/SKILL.md
+        skillFolderHash: 21b60647193d6e5c7812e743d2a1f3c6f7920ec7
+      - name: gog-contacts-cleanup
+        skillPath: .agents/skills/gog-contacts-cleanup/SKILL.md
+        skillFolderHash: 409d4421ce7051ae08f806b65a75381214eb4066
+      - name: gog-docs
+        skillPath: .agents/skills/gog-docs/SKILL.md
+        skillFolderHash: 1dc18c4bcf0b1367124f978acf33d3a2fba8b32f
+      - name: gog-drive
+        skillPath: .agents/skills/gog-drive/SKILL.md
+        skillFolderHash: 98eb65e6a4180abef7d326265fddfe83531b94fb
+      - name: gog-drive-audit
+        skillPath: .agents/skills/gog-drive-audit/SKILL.md
+        skillFolderHash: 574d0aaebc557844e157224a27d51828012d5978
+      - name: gog-forms
+        skillPath: .agents/skills/gog-forms/SKILL.md
+        skillFolderHash: f6f4535c15695adc1b89ae22d5882d2f118152a9
+      - name: gog-gmail
+        skillPath: .agents/skills/gog-gmail/SKILL.md
+        skillFolderHash: c45f7c471bf956b06df6e2a702ef1c73826df250
+      - name: gog-groups
+        skillPath: .agents/skills/gog-groups/SKILL.md
+        skillFolderHash: 24a45cbba894a92b7e731f418e6c189d1563a1af
+      - name: gog-inbox-triage
+        skillPath: .agents/skills/gog-inbox-triage/SKILL.md
+        skillFolderHash: 2fdc10ff0771587341bead11dc1355c6a23baf83
+      - name: gog-keep
+        skillPath: .agents/skills/gog-keep/SKILL.md
+        skillFolderHash: bdfa1f7ea0e29c05c42093399b7993b01033cd3f
+      - name: gog-maps
+        skillPath: .agents/skills/gog-maps/SKILL.md
+        skillFolderHash: 669d4ce4f76b5a69e7b962c5522848a290b0fc7c
+      - name: gog-meet
+        skillPath: .agents/skills/gog-meet/SKILL.md
+        skillFolderHash: 2a6534d45cf8f4886091512e14a0b3c5e41f6381
+      - name: gog-meeting-prep
+        skillPath: .agents/skills/gog-meeting-prep/SKILL.md
+        skillFolderHash: 7776e78778a85b459d8db5395a585df0bddff226
+      - name: gog-people
+        skillPath: .agents/skills/gog-people/SKILL.md
+        skillFolderHash: 1e960aad33386a98cba8ad4011dd4cf525f85d7d
+      - name: gog-photos
+        skillPath: .agents/skills/gog-photos/SKILL.md
+        skillFolderHash: 96f04993b926bf8feced3c3258686ab9be6231e5
+      - name: gog-save-attachments
+        skillPath: .agents/skills/gog-save-attachments/SKILL.md
+        skillFolderHash: 6cfcdf5012efcf7c3c3d4ca817faa74c2a07861f
+      - name: gog-searchconsole
+        skillPath: .agents/skills/gog-searchconsole/SKILL.md
+        skillFolderHash: ba11dff6d365b5ad4a37bc0532d4c9cff85dff40
+      - name: gog-sheets
+        skillPath: .agents/skills/gog-sheets/SKILL.md
+        skillFolderHash: aca54e846ee0d385e28375b66a5fcdde7c4e4a44
+      - name: gog-sites
+        skillPath: .agents/skills/gog-sites/SKILL.md
+        skillFolderHash: ded974d6cb825b7072f52820fe996235da94769a
+      - name: gog-slides
+        skillPath: .agents/skills/gog-slides/SKILL.md
+        skillFolderHash: 256fd2611fdab07472152a70b1dc2c1ebdaf27f5
+      - name: gog-tasks
+        skillPath: .agents/skills/gog-tasks/SKILL.md
+        skillFolderHash: 438ae10f73ae5d57ba93f938540667b5f230f8b3
+      - name: gog-weekly-digest
+        skillPath: .agents/skills/gog-weekly-digest/SKILL.md
+        skillFolderHash: c6476cb6c4f74cb10c482f4c3a3f6744cbeebc0d
+      - name: gog-youtube
+        skillPath: .agents/skills/gog-youtube/SKILL.md
+        skillFolderHash: 9dc3e43a072cc67d332ea1e07161d3b84312fa96
+
+  - source: Leonxlnx/taste-skill
+    sourceType: github
+    sourceUrl: https://github.com/Leonxlnx/taste-skill.git
+    branch: main
+    ref: ccbc15639c97          # pinned; bump via reviewed PR
+    license: MIT
+    path: skills
+    vendor: true
+    skills:
+      - name: brandkit
+        skillPath: skills/brandkit/SKILL.md
+        skillFolderHash: d278ff748cafab01e4ae5dd7758fc0b53258621c
+      - name: design-taste-frontend
+        skillPath: skills/taste-skill/SKILL.md
+        skillFolderHash: a6d128e53b4ec0238baee751dde33bf707adb5ec
+      - name: design-taste-frontend-v1
+        skillPath: skills/taste-skill-v1/SKILL.md
+        skillFolderHash: 3642ecef471a6ee4d9d485feea6df8ba92616b78
+      - name: full-output-enforcement
+        skillPath: skills/output-skill/SKILL.md
+        skillFolderHash: 3dd6ad49b667d15182acddc9d3e4f7763ae33c9c
+      - name: gpt-taste
+        skillPath: skills/gpt-tasteskill/SKILL.md
+        skillFolderHash: c87d529ad945cd35985b19475bf53f41682d4f69
+      - name: high-end-visual-design
+        skillPath: skills/soft-skill/SKILL.md
+        skillFolderHash: 1b5943432ddd1b980206968c529a323cc992dbec
+      - name: image-to-code
+        skillPath: skills/image-to-code-skill/SKILL.md
+        skillFolderHash: 701b3cb89c061fcf98a98f639e0b0b5c0b492479
+      - name: imagegen-frontend-mobile
+        skillPath: skills/imagegen-frontend-mobile/SKILL.md
+        skillFolderHash: 9901fcde67e9506a706912107825fdfb72e01f30
+      - name: imagegen-frontend-web
+        skillPath: skills/imagegen-frontend-web/SKILL.md
+        skillFolderHash: 3b5117d349200e33f9c3399344681620079dcc18
+      - name: industrial-brutalist-ui
+        skillPath: skills/brutalist-skill/SKILL.md
+        skillFolderHash: f812ede7e5c34cf680f629911e9f9ac05e416cf4
+      - name: minimalist-ui
+        skillPath: skills/minimalist-skill/SKILL.md
+        skillFolderHash: 5509c012862cda27e2ed7efae89ed940ecc53add
+      - name: redesign-existing-projects
+        skillPath: skills/redesign-skill/SKILL.md
+        skillFolderHash: d9cffe56d26d4af7687299e391a7be1cfaf46c1b
+      - name: stitch-design-taste
+        skillPath: skills/stitch-skill/SKILL.md
+        skillFolderHash: de2038cf286b31f33b397c1308455dbc17ef26f3
+
+  - source: coderabbitai/skills
+    sourceType: github
+    sourceUrl: https://github.com/coderabbitai/skills.git
+    branch: main
+    ref: aa49953c4cb2          # pinned; bump via reviewed PR
+    license: MIT
+    path: skills
+    vendor: true
+    skills:
+      - name: autofix
+        skillPath: skills/autofix/SKILL.md
+        skillFolderHash: 6bf6634dc86f933da9a9ade797c2d9cc8d49a886
+      - name: code-review
+        skillPath: skills/code-review/SKILL.md
+        skillFolderHash: 5049a0877f3e224666b7bdfe4a42aaccd78b3379
+
+  - source: vercel-labs/skills
+    sourceType: github
+    sourceUrl: https://github.com/vercel-labs/skills.git
+    branch: main
+    ref: 435076e78988          # pinned; bump via reviewed PR
+    license: MIT
+    path: skills
+    vendor: true
+    skills:
+      - name: find-skills
+        skillPath: skills/find-skills/SKILL.md
+        skillFolderHash: 76a98a285cb0434f3d39e1a873823556330e398b
+
+  # Repo-is-the-skill layout: SKILL.md sits at the root, so `path: .` and the
+  # whole checkout is vendored (minus .git). Pinned to the commit currently
+  # installed on the Mac, not to upstream HEAD — upstream has already moved to
+  # 277f47930184 and that bump should arrive as a reviewed PR like any other.
+  - source: awesome-skills/code-review-skill
+    sourceType: github
+    sourceUrl: https://github.com/awesome-skills/code-review-skill.git
+    branch: main
+    ref: 28e9182          # pinned; bump via reviewed PR
+    license: MIT
+    path: .
+    vendor: true
+    skills:
+      - name: code-review-skill
+        skillPath: SKILL.md
+
+  # --- third party, REFERENCE ONLY — never vendored ----------------------
+  # nraford7/Narrative-Engine publishes no licence. No licence means no grant
+  # to redistribute, so this repo records where it came from and stops there.
+  # `vendor: false` is enforced by scripts/sync.sh, not just documented.
+  # Install it yourself: git clone https://github.com/nraford7/Narrative-Engine
+  - source: nraford7/Narrative-Engine
+    sourceType: github
+    sourceUrl: https://github.com/nraford7/Narrative-Engine.git
+    branch: master
+    ref: cbdd25777f17
+    license: NONE          # no LICENSE file upstream — do not redistribute
+    path: .                # the repo root IS the skill
+    vendor: false
+    skills:
+      - name: Narrative-Engine
+        skillPath: SKILL.md
+

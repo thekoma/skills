@@ -1,0 +1,4 @@
+# Third-party skills are materialised on demand, never committed. See README.md
+# ("What this is not") for why: committing them would make this repo a mirror,
+# and one upstream has no licence that would permit it.
+vendor/

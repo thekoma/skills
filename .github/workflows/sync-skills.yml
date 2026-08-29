@@ -1,0 +1,92 @@
+name: sync-skills
+
+# Watch the upstreams named in manifest.yaml and surface movement as a pull
+# request — never as a silent commit. A skill is instructions an agent will
+# follow, so an upstream edit arriving unreviewed is the thing this repo exists
+# to prevent.
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # every 12 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-skills
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install pyyaml
+        run: python3 -m pip install --quiet pyyaml
+
+      # Runs on its own so the log shows before/after refs even when nothing
+      # moved and no PR is opened.
+      #
+      # `set -o pipefail` is load-bearing: the default GitHub shell is `bash -e`
+      # WITHOUT pipefail, so `sync.sh --check | tee` would report tee's exit
+      # code and drift would never be detected.
+      - name: Check upstreams against pinned refs
+        id: drift
+        shell: bash
+        run: |
+          set -o pipefail
+          if scripts/sync.sh --check 2>&1 | tee drift.txt; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Command substitution does not happen inside `with:`, so the report has
+      # to reach the PR body through the environment.
+      - name: Stage the drift report
+        if: steps.drift.outputs.changed == 'true'
+        shell: bash
+        run: |
+          {
+            echo 'DRIFT<<DRIFT_EOF'
+            cat drift.txt
+            echo 'DRIFT_EOF'
+          } >> "$GITHUB_ENV"
+
+      - name: Bump pinned refs
+        if: steps.drift.outputs.changed == 'true'
+        run: scripts/sync.sh --update
+
+      # Proves the new refs resolve and every declared skill still exists at its
+      # declared skillPath. Upstream renaming a directory is the failure this
+      # catches — it has already happened once (taste-skill ships
+      # `design-taste-frontend` in skills/taste-skill/). A PR that cannot be
+      # materialised is worse than no PR.
+      - name: Materialise at the new refs
+        if: steps.drift.outputs.changed == 'true'
+        run: scripts/sync.sh
+
+      - name: Open pull request
+        if: steps.drift.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: sync/upstream-refs
+          title: "sync: upstream skills moved"
+          commit-message: "sync: bump pinned refs for moved upstreams"
+          delete-branch: true
+          add-paths: manifest.yaml
+          body: |
+            Upstreams listed in `manifest.yaml` have moved. This bumps the pinned
+            refs. Nothing reaches a consumer until this merges.
+
+            ```
+            ${{ env.DRIFT }}
+            ```
+
+            Each `UPDATED` line above carries a GitHub compare link. Read the
+            upstream diff before merging — pinning is only worth something if
+            somebody looks. `vendor/` is not committed, so the file diff below is
+            just the refs.
