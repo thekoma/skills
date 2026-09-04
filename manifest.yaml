@@ -52,7 +52,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/openclaw/gogcli.git
     branch: main
-    ref: be4037f7c8f6          # pinned; bump via reviewed PR
+    ref: 25703c789da5          # pinned; bump via reviewed PR
     license: MIT
     path: .agents/skills
     vendor: true
