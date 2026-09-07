@@ -114,30 +114,108 @@ suspecting the stack.
 
 ## Self-hosted Firecrawl — extraction and search (only if Camofox is not enough)
 
-Five containers: api, playwright-service, redis, rabbitmq, nuq-postgres. Wires
-in via `FIRECRAWL_API_URL` plus `web.extract_backend: firecrawl` /
-`web.search_backend: firecrawl`; set `USE_DB_AUTHENTICATION=false` and no API
-key is needed.
+Five containers: api, playwright-service, redis, rabbitmq, nuq-postgres, plus
+an optional experimental FoundationDB queue backend (`NUQ_BACKEND=fdb`) that
+replaces nuq-postgres — leave it off. Wires in via `FIRECRAWL_API_URL` plus
+`web.extract_backend: firecrawl` / `web.search_backend: firecrawl`; set
+`USE_DB_AUTHENTICATION=false` and no API key is needed.
 
 Prefer the **keyless cloud free tier** (500 credits/month, no key, no infra)
-until it demonstrably runs out. Self-hosting costs ~3G resident, which is the
+until it demonstrably runs out. Self-hosting costs ~2G resident, which is the
 wrong trade on a memory-pressured cluster; setting `FIRECRAWL_API_URL` later
 moves extraction in-cluster without touching anything else.
 
+**`extract_backend: firecrawl` with neither `FIRECRAWL_API_KEY` nor
+`FIRECRAWL_API_URL` set is not "unconfigured" — it silently uses that keyless
+public tier.** Detection is `_has_env("FIRECRAWL_API_KEY") or
+_has_env("FIRECRAWL_API_URL")` in `web_tools.py`. Once the anonymous allowance
+runs out every extraction fails with `403 Forbidden` from
+`api.firecrawl.dev`, which reads like a hostile page rather than a missing
+backend and sends you hunting for anti-bot workarounds. A named backend in
+the config is not evidence that anything is deployed: grep for the credential
+and the URL, and check whether the workload actually exists.
+
+Run the API and its dependencies as sibling containers in **one pod** talking
+over `127.0.0.1`: none of them then needs a Service, route or NetworkPolicy,
+and only the API is reachable. Measured real footprint for the whole stack is
+**~1.9G and ~50m CPU idle**. Three deployment traps come with that shape and
+are documented in `k8s-gitops-self-modification`: an init container cannot
+wait for a sibling, `HOME=/` is unwritable at a non-root uid, and the API
+container needs **more than 2Gi** because the harness forks one Node process
+per worker — cap `NUQ_WORKER_COUNT` and allow 3Gi, or it is OOMKilled before
+binding its port and the symptom looks like a failing readiness probe.
+
+**The queue can be entirely ephemeral.** `nuq.sql` ships in
+`docker-entrypoint-initdb.d`, so an empty volume rebuilds the schema at boot;
+a restart costs only in-flight scrape jobs and no domain data lives there. A
+PVC here buys a backup obligation for work-in-flight.
+
+**A shared Postgres cluster cannot host NuQ**, so do not offer it as the cheap
+option without checking: `pg_cron` must be in `shared_preload_libraries`
+(restarting every tenant) and `cron.database_name` is a cluster-wide setting a
+single tenant cannot own — and stock CNPG images do not ship the extension at
+all (`pg_available_extensions` lists only `pgcrypto`).
+
+**There is no admin UI.** `apps/ui/ingestion-ui` is a React example template:
+no published image, absent from the compose file, and its own README warns it
+puts the API key in client-side code. The only real UI is the Bull queue admin,
+off by default and gated behind `BULL_AUTH_KEY`. Exercise the service with
+`POST /v2/scrape` instead.
+
+**It composes with an existing SearXNG rather than duplicating it.** The
+compose file exposes `SEARXNG_ENDPOINT` / `SEARXNG_ENGINES` /
+`SEARXNG_CATEGORIES` as first-class env, so a self-hosted SearXNG already in
+the cluster becomes Firecrawl's search source. Read the upstream compose for
+these before designing any glue.
+
 Traps:
 
-- **Do not use the prebuilt `nuq-postgres` GHCR image** — its `pg_cron`
-  `cron.database_name` disagrees with the init script's database and it dies at
-  startup with "can only create extension in database postgres". Build it
-  locally from `src/apps/nuq-postgres` in the Firecrawl repo, cloned into the
-  compose file's `src/` subdirectory so the relative `build:` path resolves.
 - `NUQ_RABBITMQ_URL` is mandatory, not optional.
+- Health probes: `/v2/health/liveness` **404s** on current builds. Use `/`,
+  which returns the API banner only once the server is listening. Never take a
+  health path from the API's shape — curl the candidates in the running
+  container.
 - Budget ~3G RAM actual against ~9.6G of declared limits, plus ~5 CPU. On a
   memory-pressured control-plane node this is the component that hurts;
-  schedule it on a worker or skip it.
+  schedule it on the emptiest worker. Read live headroom
+  (`kubectl top nodes` **and** each node's `Allocated resources`) rather than
+  recalling which node was tight — a node at 41% memory can still be at 84%
+  CPU requests, and the two pick different targets.
+- The declared `cpus:`/`mem_limit:` in the upstream compose (8G api, 4G
+  playwright) are sized for a dedicated host, not a shared cluster. Treat them
+  as upper bounds to shrink, not values to port across.
 - Upstream moved to the `firecrawl/*` GHCR namespace (`firecrawl/firecrawl`,
   `firecrawl/playwright-service`, `firecrawl/nuq-postgres`); the older
-  `mendableai/*` paths return `DENIED` on a token request.
+  `mendableai/*` paths return `DENIED` on a token request. Pin `firecrawl` to
+  a concrete release tag — the supporting images publish only `latest` and
+  per-arch tags.
+
+### The prebuilt `nuq-postgres` image works — verify before building it yourself
+
+Widely repeated write-ups claim the GHCR `nuq-postgres` image is broken (a
+`pg_cron` `cron.database_name` disagreeing with the init script, dying with
+"can only create extension in database postgres") and that it must be built
+from source. Tested directly: the image starts clean, `pg_cron` loads, the
+`nuq` schema and its queue tables are created, and the cron jobs run. The
+settings the claim turns on agree:
+
+```sql
+SELECT extname, extversion FROM pg_extension;      -- plpgsql, pgcrypto, pg_cron
+SELECT current_setting('cron.database_name');      -- postgres == POSTGRES_DB
+\dt nuq.*                                          -- queue_scrape, group_crawl, ...
+```
+
+The general rule: **a "this prebuilt image is broken, build it yourself"
+claim is a one-pod experiment, not a design constraint.** Run the image with
+its documented env, read the logs and the setting the claim names, and only
+then commit to a custom build pipeline — upstream fixes land without the
+blog posts being updated, and a source build is the most expensive part of
+any such plan.
+
+When the container runtime is unavailable in your own pod (no Docker socket),
+run the probe as a throwaway Kubernetes Pod pinned to the target node instead
+of abandoning the test — `apply --dry-run=server` first, then delete it once
+read, so nothing is left for ArgoCD to adopt.
 
 ## SearXNG — multi-engine search
 
@@ -155,14 +233,33 @@ Traps:
 - With the limiter on, list container/LAN CIDRs in `limiter.toml` under
   `[botdetection.ip_limit] trusted_proxies`, or internal traffic is treated as
   spoofed.
-- **Under KubeElasti (or any scale-to-zero keyed on ingress metrics), address it
-  by its ingress hostname, not its ClusterIP Service.** If the ElastiService
+- **Do not put an interactive search backend under scale-to-zero.** Measured
+  end to end, a wake-up from zero takes over a minute: the first query returns
+  502 through the gateway and only a retry ~20s later gets a 200, so every
+  idle period costs the user a failed search. Warm requests answer in
+  0.7–1.7s. Scale-to-zero is for workloads whose caller can wait or retry
+  silently; a backend on the critical path of a user-facing tool is not one.
+- **Removing an ElastiService takes two edits, not one.** Deleting the
+  `ElastiService` frees the workload, but the app's ArgoCD
+  `ignoreDifferences` almost certainly carries a
+  `/spec/replicas` jsonPointer that existed only so selfHeal would stop
+  fighting the operator. Leave it and nothing holds the replica count —
+  remove it in the same commit so selfHeal actively pins replicas back to 1.
+  Keep the readiness probe: it predates the autoscaler's needs and still stops
+  the pod joining the EndpointSlice before the app binds during a rollout.
+- **If you do run it under scale-to-zero keyed on ingress metrics, address it
+  by its ingress hostname, not its ClusterIP Service.** When the ElastiService
   trigger is a Prometheus query over `envoy_cluster_upstream_rq_total` for its
   HTTPRoutes, traffic that bypasses the gateway neither wakes a scaled-to-zero
   pod nor counts as activity keeping a live one up — a ClusterIP client gets
   scaled out from under itself after the cooldown. Read the trigger
-  (`kubectl get elastiservice <n> -o yaml`) before choosing an address; the
-  cheaper-looking hop is the wrong one here. Cold start is ~10s, warm ~1s.
+  (`kubectl get elastiservice <n> -o yaml`) before choosing an address.
+- **Keep the hostname even after the autoscaler is gone.** Once scale-to-zero
+  is removed the ClusterIP would work, but the ingress hostname is the same
+  path external clients take, so a gateway or internal-CA certificate
+  regression surfaces in the agent's own searches instead of hiding behind a
+  shortcut. When you remove the autoscaler, rewrite the comment that justified
+  the hostname rather than leaving a rationale that no longer holds.
 
 ## Residential egress chain — usually unnecessary
 

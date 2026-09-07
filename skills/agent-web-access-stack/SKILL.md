@@ -43,6 +43,14 @@ Same discipline for the browser: `BU_CDP_URL ... unreachable` /
 `Connection refused` means no browser is running for the harness to attach to.
 That is setup state, not a blocked site.
 
+**A 500 on the first browser call after an idle period is usually cold start.**
+An anti-detection browser can need >60s to launch while the tab-create call
+gives up at 30s, so the first request fails and the browser finishes starting
+just after — the service log then shows a launch-succeeded line seconds after
+the timeout. Read the browser service's own log for that line and simply
+retry before restarting the deployment or concluding the target blocked you;
+a restart resets the warm-up and reproduces the same failure once more.
+
 Fall back to raw `curl` immediately when a fetch tool errors — it tells you
 whether the site or the tool is at fault, and recovers most blogs and docs:
 
@@ -53,6 +61,14 @@ curl -sL -A "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gec
 Strip and print it in slices (`t[:12000]`, then the remainder); one dump of a
 long article gets truncated and the tail — where technical posts keep the
 gotchas — is silently lost.
+
+**A truncated `web_extract` result is head+tail — the MIDDLE is what you are
+missing.** When the footer reports truncation it also gives the path of the
+complete text on disk and the `read_file` offset to resume at. Read that file
+before drawing conclusions: on a long technical post the head is preamble and
+the tail is the verdict, while the omitted middle is where the failure list,
+the benchmark table and the caveats live. Treating head+tail as the whole
+article reliably loses the only part worth extracting.
 
 ## Step 2 — read the actual current configuration
 
@@ -74,6 +90,31 @@ Per-capability keys beat the shared one:
 `web.search_backend` / `web.extract_backend` > `web.backend` > autodetect.
 Splitting them is the normal setup — free self-hosted search with a capable
 extract provider is the intended pairing.
+
+**The inverse bug is quieter: a backend named in config with no credential
+behind it.** Selecting a provider does not check that it is reachable, so
+`extract_backend: <provider>` with neither its API key nor its API URL set
+leaves the slot pointing at nothing and Hermes silently degrades to a
+*keyless rescue* against the vendor's public endpoint. That works at low
+volume and then returns 403, so the same URL succeeds in the morning and
+fails in the afternoon — which reads as a hostile site rather than an unset
+credential. Two tells, both cheap:
+
+- The error names the fallback, not the site: `Keyless <provider> extract
+  failed`, `keyless rescue also failed`, or a bare `Set <PROVIDER>_API_KEY
+  for reliable service`. Treat that string as *configuration*, never as a
+  block, and do not escalate to `blocked-page-recovery`.
+- Confirm against the activation predicate in the installed source rather
+  than the config file. `tools/web_tools.py` gates each backend on an
+  env check of the form `("<provider>", _has_env("<PROVIDER>_API_KEY") or
+  _has_env("<PROVIDER>_API_URL"))`; if neither is present the named backend
+  was never actually available. Also check whether the provider is deployed
+  at all (`kubectl get pods -A | grep -i <provider>`) before assuming a
+  self-hosted instance is behind the name.
+
+So a slot has three states, not two: correctly wired, misrouted (credential
+present, config names something else), and **named-but-uncredentialed**
+(config right, nothing behind it). Diagnose which before changing anything.
 
 **A leftover `browser.cdp_url` silently disables the browser selection.**
 `is_camofox_mode()` returns False as soon as `browser.cdp_url` or
@@ -211,12 +252,48 @@ components. Anti-bot strategy here rests on **browser-profile persistence**
 (`userDataDir` on a PVC) plus a fetch cascade (curl → curl-cffi → real
 browser), not on cookie lifetime or a paid scraping API.
 
+When the ask is to mine an author's whole back catalogue rather than one post,
+the same diff discipline applies per post, and two rules decide what survives:
+
+- **Check each recommendation against live config before repeating it.** Grep
+  the actual deployment for the thing the post fixes; a fix for a provider or
+  gateway you do not route through is not advice, it is noise. Report "already
+  satisfied, here is the evidence" as a finding in its own right.
+- **Never propose swapping a component that is a chokepoint for all traffic**
+  just because a post uses a different one. Equivalent-capability replacement
+  of a working chokepoint is high blast radius for no measured gain; say so
+  instead of listing it as an option.
+
+When a post's own numbers are the valuable part, carry the author's *method*
+rather than their conclusion: benchmark against your own prompts, distrust
+vendor-recommended defaults, and note where the author deliberately overrode
+their own benchmark and why — that reasoning transfers, the model names do not.
+
+**Treat every factual claim in a write-up as a hypothesis with a one-command
+test, especially "this component is broken".** Much of this genre is
+AI-assisted and repeats defects that upstream has since fixed; a claim that
+some prebuilt image must be built from source is the expensive kind, because
+believing it commits you to a build pipeline you may not need. Run the thing
+and read the specific setting the claim names — a disproved claim is a
+finding worth reporting in its own right, and reporting it before writing any
+manifest is what keeps the plan honest.
+
+**Reading source settles capability; only third parties settle quality.**
+Grepping a repo answers "can it do X" and cannot answer "is it any good" or
+"how do its numbers hold up" — independent evaluators running competing tools
+on a shared harness catch what code reading never will. Budget a search pass
+for cross-vendor comparisons and reproductions before any adopt/reject
+verdict, and say plainly which parts of the verdict rest on your own reading
+versus on someone else's published measurement. See
+`oss-alternative-evaluation` for the vendor-benchmark checks themselves.
+
 ## Pitfalls
 
 - **Don't port a blog post's stack wholesale.** Write-ups bundle a working
   setup with the author's environment. The durable content is the pitfall list
   (JSON 403s, User-Agent blocks, broken prebuilt images); the deployment steps
-  are provisional.
+  are provisional — and each named defect still needs the one-pod test above
+  before it constrains the design.
 - **Prefer a working extract backend over recovery heuristics.** Reaching for
   `curl` + regex, or the archive ladder, to read an ordinary public page is a
   sign the extract backend is unset, not that the page is hostile. Fix the
