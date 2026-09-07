@@ -52,6 +52,12 @@ sources:
       - name: sdlc-review
         skillPath: skills/sdlc-review/SKILL.md
         summary: "Pre-commit review: security scan, quality gates, auto-fix."
+      - name: openviking-memory-versioning
+        skillPath: skills/openviking-memory-versioning/SKILL.md
+        summary: "Get history/diff of an OpenViking memory; judge rival backends."
+      - name: reddit-reading
+        skillPath: skills/reddit-reading/SKILL.md
+        summary: "Read Reddit from a server IP: feeds, mirrors, browser fallback."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
