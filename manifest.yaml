@@ -61,6 +61,9 @@ sources:
       - name: upstream-oss-contribution
         skillPath: skills/upstream-oss-contribution/SKILL.md
         summary: "Patch a repo you don't own: prior art, honest verification ceiling."
+      - name: hermes-doctor-false-positives
+        skillPath: skills/hermes-doctor-false-positives/SKILL.md
+        summary: "Diagnose false hermes doctor failures on relay/container deploys."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
