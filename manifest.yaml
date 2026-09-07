@@ -52,7 +52,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/openclaw/gogcli.git
     branch: main
-    ref: be4037f7c8f6          # pinned; bump via reviewed PR
+    ref: 981ca4a163e8          # pinned; bump via reviewed PR
     license: MIT
     path: .agents/skills
     vendor: true
@@ -220,7 +220,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/vercel-labs/skills.git
     branch: main
-    ref: 435076e78988          # pinned; bump via reviewed PR
+    ref: 1682051d48c3          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
