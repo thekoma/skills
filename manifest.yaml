@@ -58,6 +58,9 @@ sources:
       - name: reddit-reading
         skillPath: skills/reddit-reading/SKILL.md
         summary: "Read Reddit from a server IP: feeds, mirrors, browser fallback."
+      - name: upstream-oss-contribution
+        skillPath: skills/upstream-oss-contribution/SKILL.md
+        summary: "Patch a repo you don't own: prior art, honest verification ceiling."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
