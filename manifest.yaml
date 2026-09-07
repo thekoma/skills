@@ -28,6 +28,30 @@ sources:
       - name: image-generation
         skillPath: skills/image-generation/SKILL.md
         summary: "Subject-Context-Style prompt structuring for image models."
+      - name: agent-web-access-stack
+        skillPath: skills/agent-web-access-stack/SKILL.md
+        summary: "Diagnose and fix an agent's search/extract/browser/egress slots."
+      - name: browser-exec-chrome-setup
+        skillPath: skills/browser-exec-chrome-setup/SKILL.md
+        summary: "Give browser_exec a Chrome to drive when none is running."
+      - name: interactive-cli-automation
+        skillPath: skills/interactive-cli-automation/SKILL.md
+        summary: "Drive CLI wizards that block on Y/n or secret prompts."
+      - name: k8s-cert-manager-ca-rotation
+        skillPath: skills/k8s-cert-manager-ca-rotation/SKILL.md
+        summary: "Repair TLS after a cert-manager CA rotates or was never distributed."
+      - name: k8s-node-memory-alert-triage
+        skillPath: skills/k8s-node-memory-alert-triage/SKILL.md
+        summary: "Tell a real node memory alert from swap noise."
+      - name: k8s-pod-oom-triage
+        skillPath: skills/k8s-pod-oom-triage/SKILL.md
+        summary: "Diagnose a pod OOM-looping after an upgrade; verify the fix."
+      - name: k8s-secret-rollout-verification
+        skillPath: skills/k8s-secret-rollout-verification/SKILL.md
+        summary: "Verify a pod actually reloaded an updated Secret or env var."
+      - name: sdlc-review
+        skillPath: skills/sdlc-review/SKILL.md
+        summary: "Pre-commit review: security scan, quality gates, auto-fix."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
