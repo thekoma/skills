@@ -64,6 +64,9 @@ sources:
       - name: hermes-doctor-false-positives
         skillPath: skills/hermes-doctor-false-positives/SKILL.md
         summary: "Diagnose false hermes doctor failures on relay/container deploys."
+      - name: version-line-ordering
+        skillPath: skills/version-line-ordering/SKILL.md
+        summary: "Resolve release order by publish date; a higher major can be older."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
