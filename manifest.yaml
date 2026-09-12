@@ -91,7 +91,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/openclaw/gogcli.git
     branch: main
-    ref: 981ca4a163e8          # pinned; bump via reviewed PR
+    ref: 9c076d7688b1          # pinned; bump via reviewed PR
     license: MIT
     path: .agents/skills
     vendor: true
@@ -243,7 +243,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/coderabbitai/skills.git
     branch: main
-    ref: aa49953c4cb2          # pinned; bump via reviewed PR
+    ref: 929b0ec6dae6          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
@@ -259,7 +259,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/vercel-labs/skills.git
     branch: main
-    ref: 1682051d48c3          # pinned; bump via reviewed PR
+    ref: d66728281524          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
@@ -276,7 +276,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/awesome-skills/code-review-skill.git
     branch: main
-    ref: 277f47930184          # pinned; bump via reviewed PR
+    ref: 4850184dfd77          # pinned; bump via reviewed PR
     license: MIT
     path: .
     vendor: true
