@@ -67,6 +67,9 @@ sources:
       - name: version-line-ordering
         skillPath: skills/version-line-ordering/SKILL.md
         summary: "Resolve release order by publish date; a higher major can be older."
+      - name: mailfallback-mcp
+        skillPath: skills/mailfallback-mcp/SKILL.md
+        summary: "Search and read backed-up mail over MailFallBack's MCP server."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
