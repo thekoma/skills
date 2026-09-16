@@ -187,16 +187,16 @@ sources:
         skillFolderHash: 6cfcdf5012efcf7c3c3d4ca817faa74c2a07861f
       - name: gog-searchconsole
         skillPath: .agents/skills/gog-searchconsole/SKILL.md
-        skillFolderHash: ba11dff6d365b5ad4a37bc0532d4c9cff85dff40
+        skillFolderHash: 210c6fb64b6383bce66ea98734b14734d007ee0c
       - name: gog-sheets
         skillPath: .agents/skills/gog-sheets/SKILL.md
-        skillFolderHash: aca54e846ee0d385e28375b66a5fcdde7c4e4a44
+        skillFolderHash: 2f9a232332c8e921216e622aa1a869815d08d6a9
       - name: gog-sites
         skillPath: .agents/skills/gog-sites/SKILL.md
         skillFolderHash: ded974d6cb825b7072f52820fe996235da94769a
       - name: gog-slides
         skillPath: .agents/skills/gog-slides/SKILL.md
-        skillFolderHash: 256fd2611fdab07472152a70b1dc2c1ebdaf27f5
+        skillFolderHash: 0dc6d310ca87f1948bcd5e422aec3cf44c829558
       - name: gog-tasks
         skillPath: .agents/skills/gog-tasks/SKILL.md
         skillFolderHash: 438ae10f73ae5d57ba93f938540667b5f230f8b3
@@ -270,7 +270,7 @@ sources:
         skillFolderHash: 6bf6634dc86f933da9a9ade797c2d9cc8d49a886
       - name: code-review
         skillPath: skills/code-review/SKILL.md
-        skillFolderHash: 5049a0877f3e224666b7bdfe4a42aaccd78b3379
+        skillFolderHash: f42db1f47cac6af8da3f4acf3589a04430a77652
 
   - source: vercel-labs/skills
     sourceType: github
@@ -286,9 +286,7 @@ sources:
         skillFolderHash: 76a98a285cb0434f3d39e1a873823556330e398b
 
   # Repo-is-the-skill layout: SKILL.md sits at the root, so `path: .` and the
-  # whole checkout is vendored (minus .git). Pinned to the commit currently
-  # installed on the Mac, not to upstream HEAD — upstream has already moved to
-  # 277f47930184 and that bump should arrive as a reviewed PR like any other.
+  # whole checkout is vendored (minus .git).
   - source: awesome-skills/code-review-skill
     sourceType: github
     sourceUrl: https://github.com/awesome-skills/code-review-skill.git
