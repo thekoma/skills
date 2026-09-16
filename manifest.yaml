@@ -94,13 +94,14 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/thekoma/mailfallback.git
     branch: main
-    ref: 512fbecce5e9          # pinned; bump via reviewed PR
+    ref: fa1859e1b83d          # pinned; bump via reviewed PR
     license: MIT
-    path: .agents/skills
+    path: skills
     vendor: true
     skills:
       - name: mailfallback-mcp
-        skillPath: .agents/skills/mailfallback-mcp/SKILL.md
+        skillPath: skills/mailfallback-mcp/SKILL.md
+        skillFolderHash: 0ab93de37093832204b14d790f6ebf969e794048
         summary: "Search and read backed-up mail over MailFallBack's MCP server."
 
   # --- third party, vendored at a pinned ref -----------------------------
