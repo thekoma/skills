@@ -67,9 +67,6 @@ sources:
       - name: version-line-ordering
         skillPath: skills/version-line-ordering/SKILL.md
         summary: "Resolve release order by publish date; a higher major can be older."
-      - name: mailfallback-mcp
-        skillPath: skills/mailfallback-mcp/SKILL.md
-        summary: "Search and read backed-up mail over MailFallBack's MCP server."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
@@ -88,6 +85,23 @@ sources:
       - name: home-assistant-manager
         skillPath: ~/src/ha_config/.claude/skills/home-assistant-manager/SKILL.md
         note: "private Gitea"
+
+  # --- ours, in the app repo that owns it --------------------------------
+  # Written by us and shipped by MailFallBack itself, so it travels with the
+  # server whose tools it describes. Tracked here at a pinned ref like any
+  # other remote source: bump via scripts/sync.sh, never by editing a copy.
+  - source: thekoma/mailfallback
+    sourceType: github
+    sourceUrl: https://github.com/thekoma/mailfallback.git
+    branch: main
+    ref: 512fbecce5e9          # pinned; bump via reviewed PR
+    license: MIT
+    path: .agents/skills
+    vendor: true
+    skills:
+      - name: mailfallback-mcp
+        skillPath: .agents/skills/mailfallback-mcp/SKILL.md
+        summary: "Search and read backed-up mail over MailFallBack's MCP server."
 
   # --- third party, vendored at a pinned ref -----------------------------
   - source: openclaw/gogcli
