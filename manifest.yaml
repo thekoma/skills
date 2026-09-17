@@ -212,7 +212,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/Leonxlnx/taste-skill.git
     branch: main
-    ref: ccbc15639c97          # pinned; bump via reviewed PR
+    ref: e79ca9ec7e07          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
@@ -277,7 +277,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/vercel-labs/skills.git
     branch: main
-    ref: d6b37f62ae23          # pinned; bump via reviewed PR
+    ref: 7407f3893ad4          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
