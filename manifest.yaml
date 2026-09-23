@@ -109,7 +109,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/openclaw/gogcli.git
     branch: main
-    ref: 469b823aead2          # pinned; bump via reviewed PR
+    ref: 5c918b65addf          # pinned; bump via reviewed PR
     license: MIT
     path: .agents/skills
     vendor: true
@@ -212,7 +212,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/Leonxlnx/taste-skill.git
     branch: main
-    ref: 5217fb45be2c          # pinned; bump via reviewed PR
+    ref: a6153b39e495          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
