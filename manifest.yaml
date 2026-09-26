@@ -104,6 +104,24 @@ sources:
         skillFolderHash: 0ab93de37093832204b14d790f6ebf969e794048
         summary: "Search and read backed-up mail over MailFallBack's MCP server."
 
+  # Same pattern, but thekoma/slackfallback is a PRIVATE repo: CI reads it with
+  # a read-only deploy key scoped to that one repo (secret
+  # SLACKFALLBACK_DEPLOY_KEY, see .github/workflows/sync-skills.yml). Locally
+  # the https URL works with your own GitHub credentials.
+  - source: thekoma/slackfallback
+    sourceType: github
+    sourceUrl: https://github.com/thekoma/slackfallback.git
+    branch: main
+    ref: f79fd86f0991          # pinned; bump via reviewed PR
+    license: MIT
+    path: skills
+    vendor: true
+    skills:
+      - name: slackfallback-mcp
+        skillPath: skills/slackfallback-mcp/SKILL.md
+        skillFolderHash: 9b6738efc74485cf5fc1b7a9a57bd54867553bf1
+        summary: "Search, brief and count over the archived Slack via slackfallback's MCP server."
+
   # --- third party, vendored at a pinned ref -----------------------------
   - source: openclaw/gogcli
     sourceType: github
