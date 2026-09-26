@@ -27,6 +27,29 @@ jobs:
       - name: Install pyyaml
         run: python3 -m pip install --quiet pyyaml
 
+      # thekoma/slackfallback is private. A read-only deploy key scoped to that
+      # one repo lets this job read it; the insteadOf rewrite applies only to
+      # its URL, so every other source stays anonymous https. GitHub's host
+      # keys come from the API over TLS rather than trust-on-first-use.
+      # Secrets never reach fork PRs: this workflow runs on schedule and
+      # workflow_dispatch only.
+      - name: Read access to private sources
+        env:
+          SLACKFALLBACK_DEPLOY_KEY: ${{ secrets.SLACKFALLBACK_DEPLOY_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SLACKFALLBACK_DEPLOY_KEY" > ~/.ssh/slackfallback_deploy_key
+          chmod 600 ~/.ssh/slackfallback_deploy_key
+          curl -fsSL https://api.github.com/meta \
+            | python3 -c 'import json,sys; print("\n".join("github.com "+k for k in json.load(sys.stdin)["ssh_keys"]))' \
+            > ~/.ssh/known_hosts
+          git config --global core.sshCommand \
+            "ssh -i ~/.ssh/slackfallback_deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          git config --global url."git@github.com:thekoma/slackfallback.git".insteadOf \
+            "https://github.com/thekoma/slackfallback.git"
+
       # Runs on its own so the log shows before/after refs even when nothing
       # moved and no PR is opened.
       #
