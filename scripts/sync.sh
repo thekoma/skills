@@ -208,7 +208,13 @@ update() {
     [ -n "$src" ] || continue
     local head; head="$(remote_head "$url" "$branch" || true)"
     [ -n "$head" ] || continue
-    [ "${head:0:12}" = "${ref:0:12}" ] && continue
+    if [ "${head:0:12}" = "${ref:0:12}" ]; then
+      # Ref is current, but a hash can still be stale (hand-edited manifest,
+      # or an earlier bump that skipped the rehash). Fix it here too, or
+      # --check keeps reporting drift that --update never resolves.
+      rehash "$src" "$url" "$branch" "$ref"
+      continue
+    fi
     python3 - "$MANIFEST" "$src" "${head:0:12}" <<'PY'
 import sys, re
 path, src, new = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -224,7 +230,39 @@ for i, l in enumerate(lines):
 open(path, "w").write("\n".join(lines))
 PY
     echo "  bumped $src -> ${head:0:12}"
+    # A bumped ref makes every skillFolderHash of this source stale by
+    # construction. Regenerate them here, or materialise fails on the next run.
+    rehash "$src" "$url" "$branch" "${head:0:12}"
   done < <(sources)
+}
+
+rehash() {
+  local src="$1" url="$2" branch="$3" ref="$4" tmp
+  tmp="$(fetch_pinned "$url" "$branch" "$ref")" || { echo "  ! $src: cannot fetch $ref to rehash" >&2; return 1; }
+  while IFS=$'\t' read -r name reldir want_hash; do
+    [ -n "$want_hash" ] || continue
+    local got; got="$(git -C "$tmp" rev-parse "$ref:$reldir" 2>/dev/null || true)"
+    [ -n "$got" ] || { echo "  ! $src: $name missing at $reldir" >&2; continue; }
+    [ "$got" = "$want_hash" ] && continue
+    python3 - "$MANIFEST" "$src" "$name" "$got" <<'PY'
+import sys
+path, src, name, new = sys.argv[1:]
+lines = open(path).read().split("\n")
+insrc = inskill = False
+for i, l in enumerate(lines):
+    t = l.strip()
+    if t.startswith("- source: "):
+        insrc, inskill = t == f"- source: {src}", False
+    elif insrc and t.startswith("- name: "):
+        inskill = t == f"- name: {name}"
+    elif insrc and inskill and t.startswith("skillFolderHash: "):
+        lines[i] = l[:len(l) - len(l.lstrip())] + f"skillFolderHash: {new}"
+        inskill = False
+open(path, "w").write("\n".join(lines))
+PY
+    echo "  rehashed $src $name -> ${got:0:12}"
+  done < <(skills_of "$src")
+  rm -rf "$tmp"
 }
 
 case "$MODE" in
