@@ -88,13 +88,14 @@ Stop at the first hard fail. Report each gate as a measured fact.
    Does it run on musl/arm64? Does it need a browser, Docker socket or kubeconfig?
 4. **Tool surface.** Get the real `tools/list` before installing anything,
    **from a static source first**: Smithery detail endpoint, Glama "tools" tab,
-   the repo's README/tool docs. Scan it (gate 6) before the code ever runs.
-   Only if no static listing exists, start it in a throwaway pod that is
-   **isolated**: no credentials or real tokens (use a fake one, the listing
+   the repo's README/tool docs, and scan that listing (gate 6).
+   Only if no static listing exists, the one pre-scan exception: start it in a
+   throwaway pod that is **isolated**: no credentials or real tokens (use a fake one, the listing
    needs none), no ServiceAccount token (`automountServiceAccountToken: false`),
    no host or PVC mounts, default-deny egress except the package registry for
    the install. Do the handshake (`mcp-tool-authorization-gateway` §5), save the
-   JSON, delete the pod. Count tools (>30 bloats every
+   JSON, delete the pod, then scan the JSON. Either way the scan passes before
+   any run with real credentials. Count tools (>30 bloats every
    prompt), read `annotations.readOnlyHint`, and flag **generic dispatchers**
    (`execute_*`, `do_action`, `run_query`, `fetch_url`): they void any allowlist.
    A server that can restrict itself (`--read-only`, `--allow-tool`, `ENABLED_TOOLS`)

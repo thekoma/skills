@@ -106,8 +106,8 @@ def docker(term, limit):
     if _docker_names is None:
         try:
             r = subprocess.run(["gh", "api", "repos/docker/mcp-registry/contents/servers",
-                                "--jq", ".[].name"], capture_output=True, text=True)
-        except FileNotFoundError:  # no gh: fall back to the keyless API
+                                "--jq", ".[].name"], capture_output=True, text=True, timeout=30)
+        except (FileNotFoundError, subprocess.TimeoutExpired):  # no/stuck gh: keyless API
             r = subprocess.CompletedProcess([], 127, "", "")
         if r.returncode != 0:
             d = get("https://api.github.com/repos/docker/mcp-registry/contents/servers")
@@ -153,8 +153,8 @@ def enrich(repo):
     try:
         r = subprocess.run(["gh", "api", f"repos/{repo}", "--jq",
                             "[.stargazers_count,.pushed_at,.archived,(.license.spdx_id//\"none\"),.open_issues_count,.fork]|@json"],
-                           capture_output=True, text=True)
-    except FileNotFoundError:  # no gh: rows keep registry-reported stars only
+                           capture_output=True, text=True, timeout=20)
+    except (FileNotFoundError, subprocess.TimeoutExpired):  # rows keep registry-reported stars
         return None
     if r.returncode != 0:
         return None
