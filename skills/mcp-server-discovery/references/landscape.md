@@ -23,8 +23,10 @@ PulseMCP sunset its public API within a year.
 - Most entries are Smithery-hosted (`https://<slug>--<ns>.run.tools`). Ranking mixes in off-topic results: for `kubernetes` it returned Korean crypto and payment servers.
 
 ## Docker MCP Catalog
-- `gh api repos/docker/mcp-registry/contents/servers` -> ~328 dirs. `servers/<n>/server.yaml`: `image: mcp/<n>`, `source.project`, `source.commit` (pinned), `config.parameters`, `run.volumes`.
-- Docker builds, signs and ships an SBOM for `mcp/*` images. Strongest provenance among community servers.
+- `gh api repos/docker/mcp-registry/contents/servers` -> ~328 dirs. `servers/<n>/server.yaml` has a top-level `type`:
+  - `server`: a container image. Usually `image: mcp/<n>` (built by Docker from `source.project` at the pinned `source.commit`), but some entries point at a **third-party image** (`ghcr.io/victoriametrics-community/...`, `kapish88/...`).
+  - `remote`: a vendor-hosted endpoint (`remote.url`, `transport_type`, `oauth`). No image at all. Sample of 40: 8 remote, 32 server.
+- Signing, provenance attestations and SBOM apply **only to Docker-built `mcp/*` images**. A third-party image or a remote entry inherits none of that, so judge it like any other source. `mcp_find.py` labels each hit accordingly.
 
 ## Glama
 - Web: `glama.ai/mcp/servers` (~95k), per-server page with license/quality/maintenance grades, a tools tab and related servers. `web_extract` reads it fine.

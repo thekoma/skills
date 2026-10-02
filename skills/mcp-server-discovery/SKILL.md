@@ -50,7 +50,7 @@ What each source is good for (all verified live 2026-10):
 | Official registry `registry.modelcontextprotocol.io/v0.1/servers` | keyless, `search=`, `version=latest`, cursor | namespace-verified (`io.github.<user>/...` proves the GitHub account), exact install metadata: `packages[]` (npm/pypi/oci/mcpb, transport) and `remotes[]` | `search` is a **substring of the name only**: `kubernetes` misses `k8s-*`, and multi-word queries return nothing. Pass synonyms as separate terms. Without `version=latest` you get every version. Still "preview". |
 | GitHub MCP registry `api.mcp.github.com/v0.1/servers` | keyless, **10 req per window** | curated subset with stars, license and README inline | rate limit bites after a few terms. Treat a 429 as "out of budget", not as "empty". |
 | Smithery `registry.smithery.ai/servers?q=` | keyless | full-text search, `/servers/<qualifiedName>` returns the **full tool list with inputSchemas** without installing anything | dominated by Smithery-hosted remotes (`*.run.tools`): your traffic and credentials go through a third party. `useCount` is self-reported and gameable. |
-| Docker MCP catalog `github.com/docker/mcp-registry` | git repo, ~330 `servers/<n>/server.yaml` | curated by Docker, images `mcp/<n>` with provenance/SBOM, `source.commit` pinned | small. The image may wrap a community repo (`mcp/kubernetes` = Flux159, not containers/). |
+| Docker MCP catalog `github.com/docker/mcp-registry` | git repo, ~330 `servers/<n>/server.yaml` | curated by Docker. Docker-built `mcp/<n>` images carry provenance/SBOM and a pinned `source.commit` | small. Not every entry is a Docker-built image: some are `type: remote` (vendor URL) or a third-party image, with no Docker provenance. A Docker-built image may still wrap a community repo (`mcp/kubernetes` = Flux159, not containers/). |
 
 Sources that need an account (use the web UI by hand, never script them):
 
@@ -86,9 +86,15 @@ Stop at the first hard fail. Report each gate as a measured fact.
    agentgateway: **streamable-http** or an OCI image is the easy path. stdio-only
    means a bridge (`mcp-tool-authorization-gateway` → `references/stdio-mcp-servers.md`).
    Does it run on musl/arm64? Does it need a browser, Docker socket or kubeconfig?
-4. **Tool surface.** Get the real `tools/list` before installing anything: Smithery
-   detail endpoint, Glama "tools" tab, or run it in a throwaway pod and do the
-   handshake (`mcp-tool-authorization-gateway` §5). Count tools (>30 bloats every
+4. **Tool surface.** Get the real `tools/list` before installing anything,
+   **from a static source first**: Smithery detail endpoint, Glama "tools" tab,
+   the repo's README/tool docs. Scan it (gate 6) before the code ever runs.
+   Only if no static listing exists, start it in a throwaway pod that is
+   **isolated**: no credentials or real tokens (use a fake one, the listing
+   needs none), no ServiceAccount token (`automountServiceAccountToken: false`),
+   no host or PVC mounts, default-deny egress except the package registry for
+   the install. Do the handshake (`mcp-tool-authorization-gateway` §5), save the
+   JSON, delete the pod. Count tools (>30 bloats every
    prompt), read `annotations.readOnlyHint`, and flag **generic dispatchers**
    (`execute_*`, `do_action`, `run_query`, `fetch_url`): they void any allowlist.
    A server that can restrict itself (`--read-only`, `--allow-tool`, `ENABLED_TOOLS`)
@@ -96,7 +102,7 @@ Stop at the first hard fail. Report each gate as a measured fact.
 5. **Credential shape.** What does it need: OAuth per user, PAT, service account?
    Can the scope be narrowed? Whose account will it act as? That question
    blocks deployment. Ask it now, not at manifest time.
-6. **Security scan** (static, before first run):
+6. **Security scan** (static, before any run with real credentials):
    - `cisco-ai-defense/mcp-scanner` (Apache-2.0): YARA + optional LLM (point it at
      LiteLLM), `static` mode on a saved `tools/list` JSON, behavioural source scan.
      **Preferred: it runs fully local.** Verified invocation (musl pod: the

@@ -34,9 +34,17 @@ def get(url, timeout=20):
 
 
 def repo_of(url):
-    if not url or "github.com/" not in url:
+    """owner/repo only for a real github.com URL. Substring matching would let
+    https://evil.example/github.com/trusted/x borrow trusted/x's health."""
+    if not url:
         return None
-    p = url.split("github.com/", 1)[1].strip("/").split("/")
+    try:
+        u = urllib.parse.urlsplit(url.strip())
+    except ValueError:
+        return None
+    if u.scheme not in ("http", "https") or (u.hostname or "").lower() not in ("github.com", "www.github.com"):
+        return None
+    p = [x for x in u.path.split("/") if x]
     return f"{p[0]}/{p[1].removesuffix('.git')}" if len(p) >= 2 else None
 
 
@@ -96,8 +104,11 @@ _docker_names = None
 def docker(term, limit):
     global _docker_names
     if _docker_names is None:
-        r = subprocess.run(["gh", "api", "repos/docker/mcp-registry/contents/servers",
-                            "--jq", ".[].name"], capture_output=True, text=True)
+        try:
+            r = subprocess.run(["gh", "api", "repos/docker/mcp-registry/contents/servers",
+                                "--jq", ".[].name"], capture_output=True, text=True)
+        except FileNotFoundError:  # no gh: fall back to the keyless API
+            r = subprocess.CompletedProcess([], 127, "", "")
         if r.returncode != 0:
             d = get("https://api.github.com/repos/docker/mcp-registry/contents/servers")
             if isinstance(d, dict):
@@ -108,23 +119,43 @@ def docker(term, limit):
     hits = [n for n in _docker_names if term.lower() in n.lower()][:limit]
     out = []
     for n in hits:
-        repo = None
-        r = subprocess.run(["curl", "-4", "-s", "--max-time", "10",
-                            f"https://raw.githubusercontent.com/docker/mcp-registry/main/servers/{n}/server.yaml"],
-                           capture_output=True, text=True)
-        for line in r.stdout.splitlines():
-            if line.strip().startswith("project:"):
-                repo = repo_of(line.split("project:", 1)[1].strip())
-                break
-        out.append({"src": "docker", "name": n, "desc": f"docker catalog (curated, image mcp/{n})",
-                    "repo": repo})
+        # server.yaml is flat enough to read without a YAML dependency.
+        # type: server (an image, NOT always mcp/*) | remote (vendor-hosted URL)
+        repo, kind, image, url = None, "?", None, None
+        try:
+            req = urllib.request.Request(
+                f"https://raw.githubusercontent.com/docker/mcp-registry/main/servers/{n}/server.yaml", headers=UA)
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                text = resp.read().decode("utf-8", "replace")
+        except Exception:  # noqa: BLE001
+            text = ""
+        for line in text.splitlines():
+            s = line.strip()
+            if line.startswith("type:"):
+                kind = s.split(":", 1)[1].strip()
+            elif line.startswith("image:"):
+                image = s.split(":", 1)[1].strip()
+            elif s.startswith("project:") and repo is None:
+                repo = repo_of(s.split("project:", 1)[1].strip())
+            elif s.startswith("url:") and url is None:
+                url = s.split("url:", 1)[1].strip()
+        if kind == "remote":
+            desc = f"docker catalog: remote {url or '?'} (vendor-hosted, no Docker-built image)"
+        elif image and image.startswith("mcp/"):
+            desc = f"docker catalog: image {image} (Docker-built)"
+        else:
+            desc = f"docker catalog: image {image or '?'} (third-party image, not Docker-built)"
+        out.append({"src": "docker", "name": n, "desc": desc, "repo": repo})
     return out, None
 
 
 def enrich(repo):
-    r = subprocess.run(["gh", "api", f"repos/{repo}", "--jq",
-                        "[.stargazers_count,.pushed_at,.archived,(.license.spdx_id//\"none\"),.open_issues_count,.fork]|@json"],
-                       capture_output=True, text=True)
+    try:
+        r = subprocess.run(["gh", "api", f"repos/{repo}", "--jq",
+                            "[.stargazers_count,.pushed_at,.archived,(.license.spdx_id//\"none\"),.open_issues_count,.fork]|@json"],
+                           capture_output=True, text=True)
+    except FileNotFoundError:  # no gh: rows keep registry-reported stars only
+        return None
     if r.returncode != 0:
         return None
     s, pushed, arch, lic, issues, fork = json.loads(r.stdout)
@@ -165,6 +196,9 @@ def main():
                 for k in ("packages", "remote", "uses", "verified", "version"):
                     if row.get(k) not in (None, [], ""):
                         m[k] = row[k]
+                # publisher-provided, unverified: used only when gh enrichment is off/failed
+                if row.get("stars") is not None:
+                    m["reg_stars"] = row["stars"]
     if do_gh:
         for m in merged.values():
             if m["repo"]:
@@ -173,8 +207,10 @@ def main():
                     m["gh"] = e
     # stars first: source count rewards whoever spammed every directory,
     # and Smithery useCount is self-reported/gameable.
-    rows = sorted(merged.values(),
-                  key=lambda m: (-((m.get("gh") or {}).get("stars") or 0), -len(m["srcs"])))
+    def stars(m):
+        g = m.get("gh") or {}
+        return g["stars"] if g.get("stars") is not None else (m.get("reg_stars") or 0)
+    rows = sorted(merged.values(), key=lambda m: (-stars(m), -len(m["srcs"])))
     if as_json:
         for m in rows:
             m["names"] = sorted(m["names"]); m["srcs"] = sorted(m["srcs"])
@@ -186,7 +222,8 @@ def main():
         if g.get("archived"): flags.append("ARCHIVED")
         if g.get("fork"): flags.append("FORK")
         line = (f"[{len(m['srcs'])}src {','.join(sorted(m['srcs']))}] {m['repo'] or sorted(m['names'])[0]}"
-                + (f"  ★{g['stars']} push:{g['pushed']} {g['license']} issues:{g['issues']}" if g else "")
+                + (f"  ★{g['stars']} push:{g['pushed']} {g['license']} issues:{g['issues']}" if g
+                   else (f"  ★{m['reg_stars']}(registry-reported, unverified)" if m.get("reg_stars") is not None else ""))
                 + (f"  pkg:{'/'.join(m['packages'])}" if m.get("packages") else "")
                 + (f"  remote:{m['remote']}" if m.get("remote") else "")
                 + (f"  smithery_uses:{m['uses']}" if m.get("uses") is not None else "")
