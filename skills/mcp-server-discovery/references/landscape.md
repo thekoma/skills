@@ -11,7 +11,7 @@ PulseMCP sunset its public API within a year.
   `remotes[]{type streamable-http|sse, url, headers}`), `_meta["io.modelcontextprotocol.registry/official"]{status, publishedAt, isLatest}`.
 - `search` = case-insensitive substring on `name` only. `kubernetes` -> 2 hits, `k8s` -> 11 different ones; `aks` matched `akshare`, `leaks`. No description search, so multi-word queries return nothing.
 - Namespaces: `io.github.<user>/*` is proven by GitHub OAuth, reverse-DNS (`com.vendor/*`) by DNS/HTTP challenge. This proves the publisher's identity, not the code's safety. The registry runs no security scan (its docs say so).
-- Designed for aggregators to ETL hourly, not for end-user search.
+- Designed for aggregators to ETL hourly, not for end-user search. Slow: 11-20s per query measured; the script uses a 30s timeout.
 
 ## GitHub MCP Registry
 - `GET https://api.mcp.github.com/v0.1/servers?search=<s>&limit=<n>`. Same schema, plus `_meta["io.modelcontextprotocol.registry/publisher-provided"].github{nameWithOwner, stargazerCount, license, pushedAt, readme}`.

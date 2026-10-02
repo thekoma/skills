@@ -24,7 +24,7 @@ socket.getaddrinfo = lambda h, p, f=0, *a, **k: _orig(h, p, socket.AF_INET, *a, 
 UA = {"User-Agent": "mcp-find/1.0", "Accept": "application/json"}
 
 
-def get(url, timeout=20):
+def get(url, timeout=30):  # official registry measured at 11-20s
     try:
         req = urllib.request.Request(url, headers=UA)
         with urllib.request.urlopen(req, timeout=timeout) as r:
