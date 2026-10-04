@@ -79,8 +79,14 @@ jobs:
             echo 'DRIFT_EOF'
           } >> "$GITHUB_ENV"
 
+      # A source that cannot be bumped (upstream moved a skill directory) is
+      # left at its old ref by --update, which then exits nonzero. Carry on so
+      # the healthy sources still reach a PR; the last step fails the job, so
+      # the broken one stays visible instead of blocking everything else.
       - name: Bump pinned refs
+        id: bump
         if: steps.drift.outputs.changed == 'true'
+        continue-on-error: true
         run: scripts/sync.sh --update
 
       # Proves the new refs resolve and every declared skill still exists at its
@@ -113,3 +119,9 @@ jobs:
             upstream diff before merging — pinning is only worth something if
             somebody looks. `vendor/` is not committed, so the file diff below is
             just the refs.
+
+      - name: Fail if a source could not be bumped
+        if: steps.bump.outcome == 'failure'
+        run: |
+          echo "::error::sync.sh --update left at least one source at its old ref; see the Bump pinned refs log"
+          exit 1
