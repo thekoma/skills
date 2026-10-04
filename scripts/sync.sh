@@ -82,6 +82,16 @@ fetch_pinned() {
   echo "$tmp"
 }
 
+# Tree SHA of <dir> at <ref>, or empty when it is not a directory there.
+# --verify -q matters: plain `git rev-parse ref:missing` echoes its argument on
+# stdout, and that string would be written into the manifest as a hash.
+# (`ref:dir^{tree}` does not work: after `:` the suffix is part of the path.)
+treehash() {
+  local h; h="$(git -C "$1" rev-parse --verify -q "$2:$3" 2>/dev/null)" || return 0
+  [ "$(git -C "$1" cat-file -t "$h" 2>/dev/null)" = tree ] && echo "$h"
+  return 0
+}
+
 # A source with vendor:false must never be materialised, whatever else changes.
 # Narrative-Engine has no upstream licence; copying it would be redistribution
 # without a grant. Enforced here, not merely documented in the manifest.
@@ -108,18 +118,18 @@ materialise() {
   while IFS=$'\t' read -r src url branch ref path lic; do
     [ -n "$src" ] || continue
     local tmp
-    tmp="$(fetch_pinned "$url" "$branch" "$ref")" || { echo "  ! $src: cannot fetch $ref" >&2; continue; }
+    tmp="$(fetch_pinned "$url" "$branch" "$ref")" || { echo "  ! $src: cannot fetch $ref" >&2; MISSING=1; continue; }
 
     while IFS=$'\t' read -r name reldir want_hash; do
       local from="$tmp/$reldir"
-      [ -d "$from" ] || { echo "  ! $src: $name missing at $reldir" >&2; continue; }
+      [ -d "$from" ] || { echo "  ! $src: $name missing at $reldir" >&2; MISSING=1; continue; }
       # The manifest hash is a promise about content; verify it at the only
       # moment the content is actually here. A mismatch means the manifest was
       # edited without regenerating the hash (or the ref moved under it) - the
       # exact failure that shipped four stale hashes in PR #10 unnoticed.
       if [ -n "$want_hash" ]; then
         local got_hash
-        got_hash="$(git -C "$tmp" rev-parse "$ref:$reldir" 2>/dev/null || true)"
+        got_hash="$(treehash "$tmp" "$ref" "$reldir")"
         if [ "$got_hash" != "$want_hash" ]; then
           echo "  ! $src: $name skillFolderHash mismatch (manifest ${want_hash:0:12}, actual ${got_hash:0:12})" >&2
           HASH_MISMATCH=1
@@ -143,7 +153,10 @@ materialise() {
     echo "  ok $src @ ${ref:0:12}"
   done < <(sources)
   echo "materialised $n skills into vendor/"
-  [ "${HASH_MISMATCH:-0}" = "0" ] || { echo "hash mismatches found; regenerate skillFolderHash values" >&2; return 1; }
+  local rc=0
+  [ "${MISSING:-0}" = "0" ] || { echo "skills missing or unfetchable; vendor/ is incomplete" >&2; rc=1; }
+  [ "${HASH_MISMATCH:-0}" = "0" ] || { echo "hash mismatches found; regenerate skillFolderHash values" >&2; rc=1; }
+  return $rc
 }
 
 check() {
@@ -173,7 +186,7 @@ check() {
       while IFS=$'\t' read -r name reldir want_hash; do
         [ -n "$want_hash" ] || continue
         local got_hash
-        got_hash="$(git -C "$tmp" rev-parse "$ref:$reldir" 2>/dev/null || true)"
+        got_hash="$(treehash "$tmp" "$ref" "$reldir")"
         if [ "$got_hash" != "$want_hash" ]; then
           printf '  STALE-HASH %-23s %s: manifest %s, actual %s\n' \
             "$src" "$name" "${want_hash:0:12}" "${got_hash:0:12}"
@@ -203,66 +216,78 @@ PY
   return $drift
 }
 
+# Write the ref and/or skill hashes of one source in a single manifest edit.
+# Args: source, new ref ("" to keep), then name=hash pairs.
+write_manifest() {
+  python3 - "$MANIFEST" "$@" <<'PY'
+import sys
+path, src, ref, *pairs = sys.argv[1:]
+hashes = dict(p.split("=", 1) for p in pairs)
+lines = open(path).read().split("\n")
+insrc = False
+skill = None
+for i, l in enumerate(lines):
+    t = l.strip()
+    ind = l[:len(l) - len(l.lstrip())]
+    if t.startswith("- source: "):
+        insrc, skill = t == f"- source: {src}", None
+    elif not insrc:
+        continue
+    elif ref and t.startswith("ref: "):
+        lines[i] = f"{ind}ref: {ref}          # pinned; bump via reviewed PR"
+    elif t.startswith("- name: "):
+        skill = t[len("- name: "):]
+    elif skill in hashes and t.startswith("skillFolderHash: "):
+        lines[i] = f"{ind}skillFolderHash: {hashes.pop(skill)}"
+if hashes:
+    sys.exit(f"manifest has no skillFolderHash line for {src}: {', '.join(hashes)}")
+open(path, "w").write("\n".join(lines))
+PY
+}
+
+# Bring one source to <ref>: compute every skill's tree SHA there, and only if
+# all recorded paths exist write the new ref and hashes together. On any
+# failure the manifest is untouched, so the next run sees the old ref and
+# retries instead of carrying a half-applied bump.
+bump_source() {
+  local src="$1" url="$2" branch="$3" ref="$4" newref="$5" tmp
+  tmp="$(fetch_pinned "$url" "$branch" "$ref")" || { echo "  ! $src: cannot fetch $ref" >&2; return 1; }
+  local pairs=() bad=0
+  while IFS=$'\t' read -r name reldir want_hash; do
+    local got; got="$(treehash "$tmp" "$ref" "$reldir")"
+    if [ -z "$got" ]; then
+      echo "  ! $src: $name missing at $reldir in ${ref:0:12}" >&2; bad=1; continue
+    fi
+    # No recorded hash: nothing to keep in step, presence was the check.
+    [ -n "$want_hash" ] || continue
+    [ "$got" = "$want_hash" ] && continue
+    pairs+=("$name=$got")
+    echo "  rehashed $src $name -> ${got:0:12}"
+  done < <(skills_of "$src")
+  rm -rf "$tmp"
+  [ "$bad" = 0 ] || { echo "  ! $src: left at its old ref; fix skillPath in manifest.yaml" >&2; return 1; }
+  [ -n "$newref" ] || [ "${#pairs[@]}" -gt 0 ] || return 0
+  # Explicit: callers use `bump_source ... || rc=1`, which disables set -e here.
+  write_manifest "$src" "$newref" "${pairs[@]}" || return 1
+  [ -z "$newref" ] || echo "  bumped $src -> $newref"
+}
+
 update() {
+  local rc=0
   while IFS=$'\t' read -r src url branch ref path lic; do
     [ -n "$src" ] || continue
     local head; head="$(remote_head "$url" "$branch" || true)"
-    [ -n "$head" ] || continue
+    [ -n "$head" ] || { echo "  ? $src: cannot read $branch" >&2; rc=1; continue; }
     if [ "${head:0:12}" = "${ref:0:12}" ]; then
       # Ref is current, but a hash can still be stale (hand-edited manifest,
       # or an earlier bump that skipped the rehash). Fix it here too, or
       # --check keeps reporting drift that --update never resolves.
-      rehash "$src" "$url" "$branch" "$ref"
-      continue
+      bump_source "$src" "$url" "$branch" "$ref" "" || rc=1
+    else
+      bump_source "$src" "$url" "$branch" "${head:0:12}" "${head:0:12}" || rc=1
     fi
-    python3 - "$MANIFEST" "$src" "${head:0:12}" <<'PY'
-import sys, re
-path, src, new = sys.argv[1], sys.argv[2], sys.argv[3]
-lines = open(path).read().split("\n")
-inblk = False
-for i, l in enumerate(lines):
-    if l.strip().startswith("- source: "):
-        inblk = l.strip() == f"- source: {src}"
-    elif inblk and l.strip().startswith("ref: "):
-        indent = l[:len(l) - len(l.lstrip())]
-        lines[i] = f"{indent}ref: {new}          # pinned; bump via reviewed PR"
-        inblk = False
-open(path, "w").write("\n".join(lines))
-PY
-    echo "  bumped $src -> ${head:0:12}"
-    # A bumped ref makes every skillFolderHash of this source stale by
-    # construction. Regenerate them here, or materialise fails on the next run.
-    rehash "$src" "$url" "$branch" "${head:0:12}"
   done < <(sources)
-}
-
-rehash() {
-  local src="$1" url="$2" branch="$3" ref="$4" tmp
-  tmp="$(fetch_pinned "$url" "$branch" "$ref")" || { echo "  ! $src: cannot fetch $ref to rehash" >&2; return 1; }
-  while IFS=$'\t' read -r name reldir want_hash; do
-    [ -n "$want_hash" ] || continue
-    local got; got="$(git -C "$tmp" rev-parse "$ref:$reldir" 2>/dev/null || true)"
-    [ -n "$got" ] || { echo "  ! $src: $name missing at $reldir" >&2; continue; }
-    [ "$got" = "$want_hash" ] && continue
-    python3 - "$MANIFEST" "$src" "$name" "$got" <<'PY'
-import sys
-path, src, name, new = sys.argv[1:]
-lines = open(path).read().split("\n")
-insrc = inskill = False
-for i, l in enumerate(lines):
-    t = l.strip()
-    if t.startswith("- source: "):
-        insrc, inskill = t == f"- source: {src}", False
-    elif insrc and t.startswith("- name: "):
-        inskill = t == f"- name: {name}"
-    elif insrc and inskill and t.startswith("skillFolderHash: "):
-        lines[i] = l[:len(l) - len(l.lstrip())] + f"skillFolderHash: {new}"
-        inskill = False
-open(path, "w").write("\n".join(lines))
-PY
-    echo "  rehashed $src $name -> ${got:0:12}"
-  done < <(skills_of "$src")
-  rm -rf "$tmp"
+  return $rc
 }
 
 case "$MODE" in
