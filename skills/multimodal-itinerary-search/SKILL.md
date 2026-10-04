@@ -47,6 +47,20 @@ or over HTTP with `--http` plus a bearer token.
   `{"intent": "<capability>", "params": {...}}` with a capability name
   (`search_flights`, `search_ground`, `search_dates`, `find_trip_window`,
   `plan_multimodal`...) or `{"query": "natural language"}`.
+- **`params` is untyped in the tool schema, and field names differ per
+  capability.** Guessing them burns retries and trips loop guards. Use exactly:
+
+  ```json
+  {"intent": "search_flights", "params": {"origin": "LIN", "destination": "CDG", "departure_date": "2026-10-05", "max_stops": "nonstop"}}
+  {"intent": "search_ground",  "params": {"from": "Torino", "to": "Lyon", "date": "2026-10-23"}}
+  ```
+
+  Flights take **IATA codes** (`TRN`, not `Torino`) and `departure_date`.
+  Ground takes **city or station names** and `date`. Optional on both:
+  `return_date`, `currency`, `max_price`. Ground also takes `provider`
+  (`"trenitalia,db,transitous"`) and `type` (`train`/`bus`/`ferry`). An empty
+  flight result for a pair with no nonstop service is an answer, not an error:
+  drop `max_stops` or move to the hub procedure.
 - **Read-only deployments:** start it with a **read token**
   (`TRVL_MCP_READ_TOKEN`). trvl then refuses every read-write capability
   (`watch_price`, `update_preferences`, trip and profile mutations) with
