@@ -70,6 +70,9 @@ sources:
       - name: mcp-server-discovery
         skillPath: skills/mcp-server-discovery/SKILL.md
         summary: "Find MCP servers across registries, vet provenance/tools/security, shortlist."
+      - name: multimodal-itinerary-search
+        skillPath: skills/multimodal-itinerary-search/SKILL.md
+        summary: "Compose air + rail itineraries across Europe via hubs, with the trvl MCP and Transitous."
 
   # --- ours, but owned by another repo ----------------------------------
   # Written by us, living in the project they serve. Recorded for provenance
