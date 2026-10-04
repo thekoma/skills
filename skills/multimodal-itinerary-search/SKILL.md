@@ -25,7 +25,8 @@ booking all belong in `business-travel-planning`.
 
 ## Step 0: check the calendar
 
-Travellers often book before they ask. Look for flight or train confirmations
+Travellers often book before they ask, and one order can hold both legs.
+Search every mailbox, not only the first one that answers. Look for flight or train confirmations
 on the travel dates (calendar events created from mail, or booking mails)
 before you search anything. If a booking exists, check it instead: confirm each
 leg still runs, the connection margin, and the real arrival time. Arrival times
@@ -80,6 +81,9 @@ curl -s "https://api.transitous.org/api/v5/plan?fromPlace=<id>&toPlace=<id>&time
 ```
 
 Times in the response are **UTC**. Convert before quoting them.
+The geocode `id` ends with a trailing `:`. Pass it to `plan` exactly as
+returned: if you strip or re-join the colon, you get a 404 `Could not find
+timetable location`.
 `legs[].tripShortName` holds the train number (TGV 12536 and so on). Send a
 `User-Agent`.
 
@@ -124,6 +128,12 @@ that will run trvl before you count Italo as covered.
 
 ## Pitfalls
 
+- **Missing train details shared as screenshots.** Colleagues share a ticket
+  as an image, so the train number never appears in message text. Open the
+  attachments.
+- **Retrying a tool that times out at a fixed round number** (10.0s, 30.0s).
+  That is a proxy deadline, not a slow provider. Switch source after the
+  third identical failure.
 - **Treating `plan_multimodal` as the answer.** It depends on Rome2Rio, which
   is blocked headless. An empty or blocked result there does not mean "no
   combo exists".
