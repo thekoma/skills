@@ -100,14 +100,14 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/thekoma/mailfallback.git
     branch: main
-    ref: fa1859e1b83d          # pinned; bump via reviewed PR
+    ref: ea2739f3a95c          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
     skills:
       - name: mailfallback-mcp
         skillPath: skills/mailfallback-mcp/SKILL.md
-        skillFolderHash: 0ab93de37093832204b14d790f6ebf969e794048
+        skillFolderHash: 7972126ace37150d865dccf1be85d51a50a44459
         summary: "Search and read backed-up mail over MailFallBack's MCP server."
 
   # Same pattern, but thekoma/slackfallback is a PRIVATE repo: CI reads it with
@@ -118,14 +118,14 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/thekoma/slackfallback.git
     branch: main
-    ref: f79fd86f0991          # pinned; bump via reviewed PR
+    ref: 76c2b167e3ce          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
     skills:
       - name: slackfallback-mcp
         skillPath: skills/slackfallback-mcp/SKILL.md
-        skillFolderHash: 9b6738efc74485cf5fc1b7a9a57bd54867553bf1
+        skillFolderHash: ec289f57380989456de4eb61ed8a5b11a555da1c
         summary: "Search, brief and count over the archived Slack via slackfallback's MCP server."
 
   # --- third party, vendored at a pinned ref -----------------------------
@@ -133,7 +133,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/openclaw/gogcli.git
     branch: main
-    ref: 469b823aead2          # pinned; bump via reviewed PR
+    ref: d48a86fb3fba          # pinned; bump via reviewed PR
     license: MIT
     path: .agents/skills
     vendor: true
@@ -164,7 +164,7 @@ sources:
         skillFolderHash: 9626d1d3dc12131c12eec5ac9adcee7839f92a41
       - name: gog-contacts
         skillPath: .agents/skills/gog-contacts/SKILL.md
-        skillFolderHash: 21b60647193d6e5c7812e743d2a1f3c6f7920ec7
+        skillFolderHash: bffa5e93af1232ddb4861a25ac637e28811cb154
       - name: gog-contacts-cleanup
         skillPath: .agents/skills/gog-contacts-cleanup/SKILL.md
         skillFolderHash: 409d4421ce7051ae08f806b65a75381214eb4066
@@ -206,7 +206,7 @@ sources:
         skillFolderHash: 1e960aad33386a98cba8ad4011dd4cf525f85d7d
       - name: gog-photos
         skillPath: .agents/skills/gog-photos/SKILL.md
-        skillFolderHash: 96f04993b926bf8feced3c3258686ab9be6231e5
+        skillFolderHash: fcc052e02b7daaf38fe3a137259b57ae50232889
       - name: gog-save-attachments
         skillPath: .agents/skills/gog-save-attachments/SKILL.md
         skillFolderHash: 6cfcdf5012efcf7c3c3d4ca817faa74c2a07861f
@@ -215,7 +215,7 @@ sources:
         skillFolderHash: 210c6fb64b6383bce66ea98734b14734d007ee0c
       - name: gog-sheets
         skillPath: .agents/skills/gog-sheets/SKILL.md
-        skillFolderHash: 2f9a232332c8e921216e622aa1a869815d08d6a9
+        skillFolderHash: 3e1ec0a1b95e27e0da496ceb7ccd92153baacbed
       - name: gog-sites
         skillPath: .agents/skills/gog-sites/SKILL.md
         skillFolderHash: ded974d6cb825b7072f52820fe996235da94769a
@@ -236,26 +236,26 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/Leonxlnx/taste-skill.git
     branch: main
-    ref: 5217fb45be2c          # pinned; bump via reviewed PR
+    ref: f624f37a8c65          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
     skills:
       - name: brandkit
         skillPath: skills/brandkit/SKILL.md
-        skillFolderHash: d278ff748cafab01e4ae5dd7758fc0b53258621c
+        skillFolderHash: be1f16e544d9e7d8180c60d8632cb2d9335165e5
       - name: design-taste-frontend
         skillPath: skills/taste-skill/SKILL.md
-        skillFolderHash: a6d128e53b4ec0238baee751dde33bf707adb5ec
+        skillFolderHash: d11cb9568d2f27401ce1f48217721e69ee32637f
       - name: design-taste-frontend-v1
         skillPath: skills/taste-skill-v1/SKILL.md
-        skillFolderHash: 3642ecef471a6ee4d9d485feea6df8ba92616b78
+        skillFolderHash: ed1256012c4c8e403da238ecccf15411f526192a
       - name: full-output-enforcement
         skillPath: skills/output-skill/SKILL.md
         skillFolderHash: 3dd6ad49b667d15182acddc9d3e4f7763ae33c9c
       - name: gpt-taste
         skillPath: skills/gpt-tasteskill/SKILL.md
-        skillFolderHash: c87d529ad945cd35985b19475bf53f41682d4f69
+        skillFolderHash: 838fd5f2d48fd6f4f3171804c549e76b98d2320c
       - name: high-end-visual-design
         skillPath: skills/soft-skill/SKILL.md
         skillFolderHash: 1b5943432ddd1b980206968c529a323cc992dbec
@@ -273,10 +273,10 @@ sources:
         skillFolderHash: f812ede7e5c34cf680f629911e9f9ac05e416cf4
       - name: minimalist-ui
         skillPath: skills/minimalist-skill/SKILL.md
-        skillFolderHash: 5509c012862cda27e2ed7efae89ed940ecc53add
+        skillFolderHash: c99b716035207587e267831561b6510462460ede
       - name: redesign-existing-projects
         skillPath: skills/redesign-skill/SKILL.md
-        skillFolderHash: d9cffe56d26d4af7687299e391a7be1cfaf46c1b
+        skillFolderHash: 852ac1700e5e7434c3327f2e577a68187b841800
       - name: stitch-design-taste
         skillPath: skills/stitch-skill/SKILL.md
         skillFolderHash: de2038cf286b31f33b397c1308455dbc17ef26f3
@@ -285,23 +285,23 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/coderabbitai/skills.git
     branch: main
-    ref: 3e8763d24d54          # pinned; bump via reviewed PR
+    ref: c22fe67a2c4e          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
     skills:
       - name: autofix
         skillPath: skills/autofix/SKILL.md
-        skillFolderHash: 6bf6634dc86f933da9a9ade797c2d9cc8d49a886
+        skillFolderHash: 86943cf54a86526ab96d55db6afcb329b3420634
       - name: code-review
         skillPath: skills/code-review/SKILL.md
-        skillFolderHash: f42db1f47cac6af8da3f4acf3589a04430a77652
+        skillFolderHash: d517c5ec451a4fcd127ff7f5a79d9f1ebdac7575
 
   - source: vercel-labs/skills
     sourceType: github
     sourceUrl: https://github.com/vercel-labs/skills.git
     branch: main
-    ref: 7407f3893ad4          # pinned; bump via reviewed PR
+    ref: 13e4063a1cf9          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
