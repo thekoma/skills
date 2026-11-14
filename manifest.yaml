@@ -100,14 +100,14 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/thekoma/mailfallback.git
     branch: main
-    ref: fa1859e1b83d          # pinned; bump via reviewed PR
+    ref: 8025633b07e6          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
     skills:
       - name: mailfallback-mcp
         skillPath: skills/mailfallback-mcp/SKILL.md
-        skillFolderHash: 0ab93de37093832204b14d790f6ebf969e794048
+        skillFolderHash: 7972126ace37150d865dccf1be85d51a50a44459
         summary: "Search and read backed-up mail over MailFallBack's MCP server."
 
   # Same pattern, but thekoma/slackfallback is a PRIVATE repo: CI reads it with
@@ -118,14 +118,14 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/thekoma/slackfallback.git
     branch: main
-    ref: f79fd86f0991          # pinned; bump via reviewed PR
+    ref: 76c2b167e3ce          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
     skills:
       - name: slackfallback-mcp
         skillPath: skills/slackfallback-mcp/SKILL.md
-        skillFolderHash: 9b6738efc74485cf5fc1b7a9a57bd54867553bf1
+        skillFolderHash: ec289f57380989456de4eb61ed8a5b11a555da1c
         summary: "Search, brief and count over the archived Slack via slackfallback's MCP server."
 
   # --- third party, vendored at a pinned ref -----------------------------
@@ -133,7 +133,7 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/openclaw/gogcli.git
     branch: main
-    ref: 469b823aead2          # pinned; bump via reviewed PR
+    ref: 6d97417eade9          # pinned; bump via reviewed PR
     license: MIT
     path: .agents/skills
     vendor: true
@@ -143,94 +143,94 @@ sources:
         skillFolderHash: 6c0019cb94bb0409ff5db80264f1587fa89c2c79
       - name: gog
         skillPath: .agents/skills/gog/SKILL.md
-        skillFolderHash: e6deffb38da479cac331ea08bad6be0c71d34635
+        skillFolderHash: 817db8365080b6f25ba9d1fa46cb6dde6d6bc3d1
       - name: gog-admin
         skillPath: .agents/skills/gog-admin/SKILL.md
-        skillFolderHash: 686d2a96eaa08d8b0af8cef691f310c19128a1a0
+        skillFolderHash: 666508474a8565d1e5d787e8864360237e45f7c3
       - name: gog-analytics
         skillPath: .agents/skills/gog-analytics/SKILL.md
-        skillFolderHash: 84633d51c0566f1c170524f65228b01780d7524e
+        skillFolderHash: 105417906a31aeff7afa6cee26692de810d79f6d
       - name: gog-appscript
         skillPath: .agents/skills/gog-appscript/SKILL.md
-        skillFolderHash: 6a581a3f741820bad55f55b24ae1abd9f46e31a0
+        skillFolderHash: 7c0fea3f5b7be8a5f5dc466af8a4b0f658b3afd7
       - name: gog-calendar
         skillPath: .agents/skills/gog-calendar/SKILL.md
-        skillFolderHash: 174cf4a546f5317dda2aa3944d24e64ee8b2f76f
+        skillFolderHash: 0aeab62e7ebafd7c3e618d7d82c2b7f3e1450e52
       - name: gog-chat
         skillPath: .agents/skills/gog-chat/SKILL.md
-        skillFolderHash: 225e70797191acb693cdb10e3b6a49114a756ee3
+        skillFolderHash: 87ee767d07634fe4b24c0bffecb12cb5c027e217
       - name: gog-classroom
         skillPath: .agents/skills/gog-classroom/SKILL.md
-        skillFolderHash: 9626d1d3dc12131c12eec5ac9adcee7839f92a41
+        skillFolderHash: 517af69267939ab775545e13ad6df627e843dc6a
       - name: gog-contacts
         skillPath: .agents/skills/gog-contacts/SKILL.md
-        skillFolderHash: 21b60647193d6e5c7812e743d2a1f3c6f7920ec7
+        skillFolderHash: 651c7f633160589f82f8a52bcf36f76b64ca1af2
       - name: gog-contacts-cleanup
         skillPath: .agents/skills/gog-contacts-cleanup/SKILL.md
         skillFolderHash: 409d4421ce7051ae08f806b65a75381214eb4066
       - name: gog-docs
         skillPath: .agents/skills/gog-docs/SKILL.md
-        skillFolderHash: 1dc18c4bcf0b1367124f978acf33d3a2fba8b32f
+        skillFolderHash: 1003b913ac3944a0d153e1f8fadd50fbeb314dfd
       - name: gog-drive
         skillPath: .agents/skills/gog-drive/SKILL.md
-        skillFolderHash: 98eb65e6a4180abef7d326265fddfe83531b94fb
+        skillFolderHash: e20c3e6602732202e7ae28c248f5802ede4b521f
       - name: gog-drive-audit
         skillPath: .agents/skills/gog-drive-audit/SKILL.md
         skillFolderHash: 574d0aaebc557844e157224a27d51828012d5978
       - name: gog-forms
         skillPath: .agents/skills/gog-forms/SKILL.md
-        skillFolderHash: f6f4535c15695adc1b89ae22d5882d2f118152a9
+        skillFolderHash: 3685b27c3aeb09e10297629f056b3d1aedeb2baf
       - name: gog-gmail
         skillPath: .agents/skills/gog-gmail/SKILL.md
-        skillFolderHash: c45f7c471bf956b06df6e2a702ef1c73826df250
+        skillFolderHash: 8151d9e560d850f1f5f2d9b53a1db464db77bb3c
       - name: gog-groups
         skillPath: .agents/skills/gog-groups/SKILL.md
-        skillFolderHash: 24a45cbba894a92b7e731f418e6c189d1563a1af
+        skillFolderHash: 4a37bb7cd0067ccf7b03d8c6c44e3f2f620af1e1
       - name: gog-inbox-triage
         skillPath: .agents/skills/gog-inbox-triage/SKILL.md
         skillFolderHash: 2fdc10ff0771587341bead11dc1355c6a23baf83
       - name: gog-keep
         skillPath: .agents/skills/gog-keep/SKILL.md
-        skillFolderHash: bdfa1f7ea0e29c05c42093399b7993b01033cd3f
+        skillFolderHash: da517eb61d401e943e80835ac7ae4d4b3a08ac61
       - name: gog-maps
         skillPath: .agents/skills/gog-maps/SKILL.md
-        skillFolderHash: 669d4ce4f76b5a69e7b962c5522848a290b0fc7c
+        skillFolderHash: af092f51983f9135a8ef5edd3a2b9a5f46941857
       - name: gog-meet
         skillPath: .agents/skills/gog-meet/SKILL.md
-        skillFolderHash: 2a6534d45cf8f4886091512e14a0b3c5e41f6381
+        skillFolderHash: 927ff9a507bf41d200aa9c0260c51902529bb321
       - name: gog-meeting-prep
         skillPath: .agents/skills/gog-meeting-prep/SKILL.md
         skillFolderHash: 7776e78778a85b459d8db5395a585df0bddff226
       - name: gog-people
         skillPath: .agents/skills/gog-people/SKILL.md
-        skillFolderHash: 1e960aad33386a98cba8ad4011dd4cf525f85d7d
+        skillFolderHash: 8460bbcbbd099198720818ff00d60b30c71ab7ca
       - name: gog-photos
         skillPath: .agents/skills/gog-photos/SKILL.md
-        skillFolderHash: 96f04993b926bf8feced3c3258686ab9be6231e5
+        skillFolderHash: 978dfc7ae3489c1339cb4413414b54930542066c
       - name: gog-save-attachments
         skillPath: .agents/skills/gog-save-attachments/SKILL.md
         skillFolderHash: 6cfcdf5012efcf7c3c3d4ca817faa74c2a07861f
       - name: gog-searchconsole
         skillPath: .agents/skills/gog-searchconsole/SKILL.md
-        skillFolderHash: 210c6fb64b6383bce66ea98734b14734d007ee0c
+        skillFolderHash: aa588b2506d41838b3a837d5586934adf48280b8
       - name: gog-sheets
         skillPath: .agents/skills/gog-sheets/SKILL.md
-        skillFolderHash: 2f9a232332c8e921216e622aa1a869815d08d6a9
+        skillFolderHash: 7bbc7b036ec52b46ca0ebc108aa7c68de1e83e7f
       - name: gog-sites
         skillPath: .agents/skills/gog-sites/SKILL.md
-        skillFolderHash: ded974d6cb825b7072f52820fe996235da94769a
+        skillFolderHash: f47f8027090bf8f5e5add355354563655285c3c9
       - name: gog-slides
         skillPath: .agents/skills/gog-slides/SKILL.md
-        skillFolderHash: 0dc6d310ca87f1948bcd5e422aec3cf44c829558
+        skillFolderHash: e37651eb13f128e05b52796637d1fd2342a03ea5
       - name: gog-tasks
         skillPath: .agents/skills/gog-tasks/SKILL.md
-        skillFolderHash: 438ae10f73ae5d57ba93f938540667b5f230f8b3
+        skillFolderHash: 0b00f8d51e0a9e7a8bb2bacb9bebe5564fa542a5
       - name: gog-weekly-digest
         skillPath: .agents/skills/gog-weekly-digest/SKILL.md
         skillFolderHash: c6476cb6c4f74cb10c482f4c3a3f6744cbeebc0d
       - name: gog-youtube
         skillPath: .agents/skills/gog-youtube/SKILL.md
-        skillFolderHash: 9dc3e43a072cc67d332ea1e07161d3b84312fa96
+        skillFolderHash: dc43a6192683e70d05733629ff798e7ae0ee7a3b
 
   - source: Leonxlnx/taste-skill
     sourceType: github
@@ -285,23 +285,23 @@ sources:
     sourceType: github
     sourceUrl: https://github.com/coderabbitai/skills.git
     branch: main
-    ref: 3e8763d24d54          # pinned; bump via reviewed PR
+    ref: 45bd1ae2c471          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
     skills:
       - name: autofix
         skillPath: skills/autofix/SKILL.md
-        skillFolderHash: 6bf6634dc86f933da9a9ade797c2d9cc8d49a886
+        skillFolderHash: a1c5f41630809f6007880e73708889b400725037
       - name: code-review
         skillPath: skills/code-review/SKILL.md
-        skillFolderHash: f42db1f47cac6af8da3f4acf3589a04430a77652
+        skillFolderHash: 4316113bd7b5f1315a9b3a51bf0bb2e8f56e5da8
 
   - source: vercel-labs/skills
     sourceType: github
     sourceUrl: https://github.com/vercel-labs/skills.git
     branch: main
-    ref: 7407f3893ad4          # pinned; bump via reviewed PR
+    ref: b716f9dc2ba3          # pinned; bump via reviewed PR
     license: MIT
     path: skills
     vendor: true
