@@ -1,343 +1,264 @@
-# Provenance manifest for every skill this repo tracks.
-#
-# Derived from ~/.agents/.skill-lock.json (written by `npx skills`, the
-# vercel-labs/skills installer). Field names are kept identical to that
-# lockfile — source, sourceType, sourceUrl, skillPath, skillFolderHash — so
-# the two can be diffed without a translation layer.
-#
-# `ref` is a PINNED commit. Nothing upstream reaches a consumer until that ref
-# is bumped, and bumping it is a reviewed pull request. See README.md.
-
 version: 1
-generated: "2026-08-29"
-
+generated: '2026-08-29'
 sources:
-
-  # --- ours -------------------------------------------------------------
-  # No upstream. This repo is where they live; edit them here.
-  - source: thekoma/skills
-    sourceType: ours
-    sourceUrl: https://github.com/thekoma/skills.git
-    license: MIT
-    path: skills
-    vendor: false   # already in-tree; nothing to materialise
-    skills:
-      - name: stop-slop
-        skillPath: skills/stop-slop/SKILL.md
-        summary: "Remove AI writing patterns from prose."
-      - name: image-generation
-        skillPath: skills/image-generation/SKILL.md
-        summary: "Subject-Context-Style prompt structuring for image models."
-      - name: agent-web-access-stack
-        skillPath: skills/agent-web-access-stack/SKILL.md
-        summary: "Diagnose and fix an agent's search/extract/browser/egress slots."
-      - name: browser-exec-chrome-setup
-        skillPath: skills/browser-exec-chrome-setup/SKILL.md
-        summary: "Give browser_exec a Chrome to drive when none is running."
-      - name: interactive-cli-automation
-        skillPath: skills/interactive-cli-automation/SKILL.md
-        summary: "Drive CLI wizards that block on Y/n or secret prompts."
-      - name: k8s-cert-manager-ca-rotation
-        skillPath: skills/k8s-cert-manager-ca-rotation/SKILL.md
-        summary: "Repair TLS after a cert-manager CA rotates or was never distributed."
-      - name: k8s-node-memory-alert-triage
-        skillPath: skills/k8s-node-memory-alert-triage/SKILL.md
-        summary: "Tell a real node memory alert from swap noise."
-      - name: k8s-pod-oom-triage
-        skillPath: skills/k8s-pod-oom-triage/SKILL.md
-        summary: "Diagnose a pod OOM-looping after an upgrade; verify the fix."
-      - name: k8s-secret-rollout-verification
-        skillPath: skills/k8s-secret-rollout-verification/SKILL.md
-        summary: "Verify a pod actually reloaded an updated Secret or env var."
-      - name: sdlc-review
-        skillPath: skills/sdlc-review/SKILL.md
-        summary: "Pre-commit review: security scan, quality gates, auto-fix."
-      - name: openviking-memory-versioning
-        skillPath: skills/openviking-memory-versioning/SKILL.md
-        summary: "Get history/diff of an OpenViking memory; judge rival backends."
-      - name: reddit-reading
-        skillPath: skills/reddit-reading/SKILL.md
-        summary: "Read Reddit from a server IP: feeds, mirrors, browser fallback."
-      - name: upstream-oss-contribution
-        skillPath: skills/upstream-oss-contribution/SKILL.md
-        summary: "Patch a repo you don't own: prior art, honest verification ceiling."
-      - name: hermes-doctor-false-positives
-        skillPath: skills/hermes-doctor-false-positives/SKILL.md
-        summary: "Diagnose false hermes doctor failures on relay/container deploys."
-      - name: version-line-ordering
-        skillPath: skills/version-line-ordering/SKILL.md
-        summary: "Resolve release order by publish date; a higher major can be older."
-      - name: mcp-server-discovery
-        skillPath: skills/mcp-server-discovery/SKILL.md
-        summary: "Find MCP servers across registries, vet provenance/tools/security, shortlist."
-      - name: multimodal-itinerary-search
-        skillPath: skills/multimodal-itinerary-search/SKILL.md
-        summary: "Compose air + rail itineraries across Europe via hubs, with the trvl MCP and Transitous."
-
-  # --- ours, but owned by another repo ----------------------------------
-  # Written by us, living in the project they serve. Recorded for provenance
-  # only: moving them here would take them away from the repo that uses them.
-  - source: local/project-repos
-    sourceType: ours-external
-    license: unspecified
-    vendor: false
-    skills:
-      - name: design-avatar
-        skillPath: ~/src/avatar/.claude/skills/design-avatar/SKILL.md
-        note: "no git remote"
-      - name: clonare-voci-robot
-        skillPath: ~/src/valetudo/.claude/skills/clonare-voci-robot/SKILL.md
-        note: "no git remote"
-      - name: home-assistant-manager
-        skillPath: ~/src/ha_config/.claude/skills/home-assistant-manager/SKILL.md
-        note: "private Gitea"
-
-  # --- ours, in the app repo that owns it --------------------------------
-  # Written by us and shipped by MailFallBack itself, so it travels with the
-  # server whose tools it describes. Tracked here at a pinned ref like any
-  # other remote source: bump via scripts/sync.sh, never by editing a copy.
-  - source: thekoma/mailfallback
-    sourceType: github
-    sourceUrl: https://github.com/thekoma/mailfallback.git
-    branch: main
-    ref: fa1859e1b83d          # pinned; bump via reviewed PR
-    license: MIT
-    path: skills
-    vendor: true
-    skills:
-      - name: mailfallback-mcp
-        skillPath: skills/mailfallback-mcp/SKILL.md
-        skillFolderHash: 0ab93de37093832204b14d790f6ebf969e794048
-        summary: "Search and read backed-up mail over MailFallBack's MCP server."
-
-  # Same pattern, but thekoma/slackfallback is a PRIVATE repo: CI reads it with
-  # a read-only deploy key scoped to that one repo (secret
-  # SLACKFALLBACK_DEPLOY_KEY, see .github/workflows/sync-skills.yml). Locally
-  # the https URL works with your own GitHub credentials.
-  - source: thekoma/slackfallback
-    sourceType: github
-    sourceUrl: https://github.com/thekoma/slackfallback.git
-    branch: main
-    ref: f79fd86f0991          # pinned; bump via reviewed PR
-    license: MIT
-    path: skills
-    vendor: true
-    skills:
-      - name: slackfallback-mcp
-        skillPath: skills/slackfallback-mcp/SKILL.md
-        skillFolderHash: 9b6738efc74485cf5fc1b7a9a57bd54867553bf1
-        summary: "Search, brief and count over the archived Slack via slackfallback's MCP server."
-
-  # --- third party, vendored at a pinned ref -----------------------------
-  - source: openclaw/gogcli
-    sourceType: github
-    sourceUrl: https://github.com/openclaw/gogcli.git
-    branch: main
-    ref: 469b823aead2          # pinned; bump via reviewed PR
-    license: MIT
-    path: .agents/skills
-    vendor: true
-    skills:
-      - name: crabbox
-        skillPath: .agents/skills/crabbox/SKILL.md
-        skillFolderHash: 6c0019cb94bb0409ff5db80264f1587fa89c2c79
-      - name: gog
-        skillPath: .agents/skills/gog/SKILL.md
-        skillFolderHash: e6deffb38da479cac331ea08bad6be0c71d34635
-      - name: gog-admin
-        skillPath: .agents/skills/gog-admin/SKILL.md
-        skillFolderHash: 686d2a96eaa08d8b0af8cef691f310c19128a1a0
-      - name: gog-analytics
-        skillPath: .agents/skills/gog-analytics/SKILL.md
-        skillFolderHash: 84633d51c0566f1c170524f65228b01780d7524e
-      - name: gog-appscript
-        skillPath: .agents/skills/gog-appscript/SKILL.md
-        skillFolderHash: 6a581a3f741820bad55f55b24ae1abd9f46e31a0
-      - name: gog-calendar
-        skillPath: .agents/skills/gog-calendar/SKILL.md
-        skillFolderHash: 174cf4a546f5317dda2aa3944d24e64ee8b2f76f
-      - name: gog-chat
-        skillPath: .agents/skills/gog-chat/SKILL.md
-        skillFolderHash: 225e70797191acb693cdb10e3b6a49114a756ee3
-      - name: gog-classroom
-        skillPath: .agents/skills/gog-classroom/SKILL.md
-        skillFolderHash: 9626d1d3dc12131c12eec5ac9adcee7839f92a41
-      - name: gog-contacts
-        skillPath: .agents/skills/gog-contacts/SKILL.md
-        skillFolderHash: 21b60647193d6e5c7812e743d2a1f3c6f7920ec7
-      - name: gog-contacts-cleanup
-        skillPath: .agents/skills/gog-contacts-cleanup/SKILL.md
-        skillFolderHash: 409d4421ce7051ae08f806b65a75381214eb4066
-      - name: gog-docs
-        skillPath: .agents/skills/gog-docs/SKILL.md
-        skillFolderHash: 1dc18c4bcf0b1367124f978acf33d3a2fba8b32f
-      - name: gog-drive
-        skillPath: .agents/skills/gog-drive/SKILL.md
-        skillFolderHash: 98eb65e6a4180abef7d326265fddfe83531b94fb
-      - name: gog-drive-audit
-        skillPath: .agents/skills/gog-drive-audit/SKILL.md
-        skillFolderHash: 574d0aaebc557844e157224a27d51828012d5978
-      - name: gog-forms
-        skillPath: .agents/skills/gog-forms/SKILL.md
-        skillFolderHash: f6f4535c15695adc1b89ae22d5882d2f118152a9
-      - name: gog-gmail
-        skillPath: .agents/skills/gog-gmail/SKILL.md
-        skillFolderHash: c45f7c471bf956b06df6e2a702ef1c73826df250
-      - name: gog-groups
-        skillPath: .agents/skills/gog-groups/SKILL.md
-        skillFolderHash: 24a45cbba894a92b7e731f418e6c189d1563a1af
-      - name: gog-inbox-triage
-        skillPath: .agents/skills/gog-inbox-triage/SKILL.md
-        skillFolderHash: 2fdc10ff0771587341bead11dc1355c6a23baf83
-      - name: gog-keep
-        skillPath: .agents/skills/gog-keep/SKILL.md
-        skillFolderHash: bdfa1f7ea0e29c05c42093399b7993b01033cd3f
-      - name: gog-maps
-        skillPath: .agents/skills/gog-maps/SKILL.md
-        skillFolderHash: 669d4ce4f76b5a69e7b962c5522848a290b0fc7c
-      - name: gog-meet
-        skillPath: .agents/skills/gog-meet/SKILL.md
-        skillFolderHash: 2a6534d45cf8f4886091512e14a0b3c5e41f6381
-      - name: gog-meeting-prep
-        skillPath: .agents/skills/gog-meeting-prep/SKILL.md
-        skillFolderHash: 7776e78778a85b459d8db5395a585df0bddff226
-      - name: gog-people
-        skillPath: .agents/skills/gog-people/SKILL.md
-        skillFolderHash: 1e960aad33386a98cba8ad4011dd4cf525f85d7d
-      - name: gog-photos
-        skillPath: .agents/skills/gog-photos/SKILL.md
-        skillFolderHash: 96f04993b926bf8feced3c3258686ab9be6231e5
-      - name: gog-save-attachments
-        skillPath: .agents/skills/gog-save-attachments/SKILL.md
-        skillFolderHash: 6cfcdf5012efcf7c3c3d4ca817faa74c2a07861f
-      - name: gog-searchconsole
-        skillPath: .agents/skills/gog-searchconsole/SKILL.md
-        skillFolderHash: 210c6fb64b6383bce66ea98734b14734d007ee0c
-      - name: gog-sheets
-        skillPath: .agents/skills/gog-sheets/SKILL.md
-        skillFolderHash: 2f9a232332c8e921216e622aa1a869815d08d6a9
-      - name: gog-sites
-        skillPath: .agents/skills/gog-sites/SKILL.md
-        skillFolderHash: ded974d6cb825b7072f52820fe996235da94769a
-      - name: gog-slides
-        skillPath: .agents/skills/gog-slides/SKILL.md
-        skillFolderHash: 0dc6d310ca87f1948bcd5e422aec3cf44c829558
-      - name: gog-tasks
-        skillPath: .agents/skills/gog-tasks/SKILL.md
-        skillFolderHash: 438ae10f73ae5d57ba93f938540667b5f230f8b3
-      - name: gog-weekly-digest
-        skillPath: .agents/skills/gog-weekly-digest/SKILL.md
-        skillFolderHash: c6476cb6c4f74cb10c482f4c3a3f6744cbeebc0d
-      - name: gog-youtube
-        skillPath: .agents/skills/gog-youtube/SKILL.md
-        skillFolderHash: 9dc3e43a072cc67d332ea1e07161d3b84312fa96
-
-  - source: Leonxlnx/taste-skill
-    sourceType: github
-    sourceUrl: https://github.com/Leonxlnx/taste-skill.git
-    branch: main
-    ref: 5217fb45be2c          # pinned; bump via reviewed PR
-    license: MIT
-    path: skills
-    vendor: true
-    skills:
-      - name: brandkit
-        skillPath: skills/brandkit/SKILL.md
-        skillFolderHash: d278ff748cafab01e4ae5dd7758fc0b53258621c
-      - name: design-taste-frontend
-        skillPath: skills/taste-skill/SKILL.md
-        skillFolderHash: a6d128e53b4ec0238baee751dde33bf707adb5ec
-      - name: design-taste-frontend-v1
-        skillPath: skills/taste-skill-v1/SKILL.md
-        skillFolderHash: 3642ecef471a6ee4d9d485feea6df8ba92616b78
-      - name: full-output-enforcement
-        skillPath: skills/output-skill/SKILL.md
-        skillFolderHash: 3dd6ad49b667d15182acddc9d3e4f7763ae33c9c
-      - name: gpt-taste
-        skillPath: skills/gpt-tasteskill/SKILL.md
-        skillFolderHash: c87d529ad945cd35985b19475bf53f41682d4f69
-      - name: high-end-visual-design
-        skillPath: skills/soft-skill/SKILL.md
-        skillFolderHash: 1b5943432ddd1b980206968c529a323cc992dbec
-      - name: image-to-code
-        skillPath: skills/image-to-code-skill/SKILL.md
-        skillFolderHash: 701b3cb89c061fcf98a98f639e0b0b5c0b492479
-      - name: imagegen-frontend-mobile
-        skillPath: skills/imagegen-frontend-mobile/SKILL.md
-        skillFolderHash: 9901fcde67e9506a706912107825fdfb72e01f30
-      - name: imagegen-frontend-web
-        skillPath: skills/imagegen-frontend-web/SKILL.md
-        skillFolderHash: 3b5117d349200e33f9c3399344681620079dcc18
-      - name: industrial-brutalist-ui
-        skillPath: skills/brutalist-skill/SKILL.md
-        skillFolderHash: f812ede7e5c34cf680f629911e9f9ac05e416cf4
-      - name: minimalist-ui
-        skillPath: skills/minimalist-skill/SKILL.md
-        skillFolderHash: 5509c012862cda27e2ed7efae89ed940ecc53add
-      - name: redesign-existing-projects
-        skillPath: skills/redesign-skill/SKILL.md
-        skillFolderHash: d9cffe56d26d4af7687299e391a7be1cfaf46c1b
-      - name: stitch-design-taste
-        skillPath: skills/stitch-skill/SKILL.md
-        skillFolderHash: de2038cf286b31f33b397c1308455dbc17ef26f3
-
-  - source: coderabbitai/skills
-    sourceType: github
-    sourceUrl: https://github.com/coderabbitai/skills.git
-    branch: main
-    ref: 3e8763d24d54          # pinned; bump via reviewed PR
-    license: MIT
-    path: skills
-    vendor: true
-    skills:
-      - name: autofix
-        skillPath: skills/autofix/SKILL.md
-        skillFolderHash: 6bf6634dc86f933da9a9ade797c2d9cc8d49a886
-      - name: code-review
-        skillPath: skills/code-review/SKILL.md
-        skillFolderHash: f42db1f47cac6af8da3f4acf3589a04430a77652
-
-  - source: vercel-labs/skills
-    sourceType: github
-    sourceUrl: https://github.com/vercel-labs/skills.git
-    branch: main
-    ref: 7407f3893ad4          # pinned; bump via reviewed PR
-    license: MIT
-    path: skills
-    vendor: true
-    skills:
-      - name: find-skills
-        skillPath: skills/find-skills/SKILL.md
-        skillFolderHash: 76a98a285cb0434f3d39e1a873823556330e398b
-
-  # Repo-is-the-skill layout: SKILL.md sits at the root, so `path: .` and the
-  # whole checkout is vendored (minus .git).
-  - source: awesome-skills/code-review-skill
-    sourceType: github
-    sourceUrl: https://github.com/awesome-skills/code-review-skill.git
-    branch: main
-    ref: 4850184dfd77          # pinned; bump via reviewed PR
-    license: MIT
-    path: .
-    vendor: true
-    skills:
-      - name: code-review-skill
-        skillPath: SKILL.md
-
-  # --- third party, REFERENCE ONLY — never vendored ----------------------
-  # nraford7/Narrative-Engine publishes no licence. No licence means no grant
-  # to redistribute, so this repo records where it came from and stops there.
-  # `vendor: false` is enforced by scripts/sync.sh, not just documented.
-  # Install it yourself: git clone https://github.com/nraford7/Narrative-Engine
-  - source: nraford7/Narrative-Engine
-    sourceType: github
-    sourceUrl: https://github.com/nraford7/Narrative-Engine.git
-    branch: master
-    ref: cbdd25777f17
-    license: NONE          # no LICENSE file upstream — do not redistribute
-    path: .                # the repo root IS the skill
-    vendor: false
-    skills:
-      - name: Narrative-Engine
-        skillPath: SKILL.md
-
+- source: thekoma/skills
+  sourceType: ours
+  sourceUrl: https://github.com/thekoma/skills.git
+  license: MIT
+  path: skills
+  vendor: false
+  skills:
+  - name: stop-slop
+    skillPath: skills/stop-slop/SKILL.md
+    summary: Remove AI writing patterns from prose.
+  - name: image-generation
+    skillPath: skills/image-generation/SKILL.md
+    summary: Subject-Context-Style prompt structuring for image models.
+  - name: agent-web-access-stack
+    skillPath: skills/agent-web-access-stack/SKILL.md
+    summary: Diagnose and fix an agent's search/extract/browser/egress slots.
+  - name: browser-exec-chrome-setup
+    skillPath: skills/browser-exec-chrome-setup/SKILL.md
+    summary: Give browser_exec a Chrome to drive when none is running.
+  - name: interactive-cli-automation
+    skillPath: skills/interactive-cli-automation/SKILL.md
+    summary: Drive CLI wizards that block on Y/n or secret prompts.
+  - name: k8s-cert-manager-ca-rotation
+    skillPath: skills/k8s-cert-manager-ca-rotation/SKILL.md
+    summary: Repair TLS after a cert-manager CA rotates or was never distributed.
+  - name: k8s-node-memory-alert-triage
+    skillPath: skills/k8s-node-memory-alert-triage/SKILL.md
+    summary: Tell a real node memory alert from swap noise.
+  - name: k8s-pod-oom-triage
+    skillPath: skills/k8s-pod-oom-triage/SKILL.md
+    summary: Diagnose a pod OOM-looping after an upgrade; verify the fix.
+  - name: k8s-secret-rollout-verification
+    skillPath: skills/k8s-secret-rollout-verification/SKILL.md
+    summary: Verify a pod actually reloaded an updated Secret or env var.
+  - name: sdlc-review
+    skillPath: skills/sdlc-review/SKILL.md
+    summary: 'Pre-commit review: security scan, quality gates, auto-fix.'
+  - name: openviking-memory-versioning
+    skillPath: skills/openviking-memory-versioning/SKILL.md
+    summary: Get history/diff of an OpenViking memory; judge rival backends.
+  - name: reddit-reading
+    skillPath: skills/reddit-reading/SKILL.md
+    summary: 'Read Reddit from a server IP: feeds, mirrors, browser fallback.'
+  - name: upstream-oss-contribution
+    skillPath: skills/upstream-oss-contribution/SKILL.md
+    summary: 'Patch a repo you don''t own: prior art, honest verification ceiling.'
+  - name: hermes-doctor-false-positives
+    skillPath: skills/hermes-doctor-false-positives/SKILL.md
+    summary: Diagnose false hermes doctor failures on relay/container deploys.
+  - name: version-line-ordering
+    skillPath: skills/version-line-ordering/SKILL.md
+    summary: Resolve release order by publish date; a higher major can be older.
+  - name: mcp-server-discovery
+    skillPath: skills/mcp-server-discovery/SKILL.md
+    summary: Find MCP servers across registries, vet provenance/tools/security, shortlist.
+  - name: multimodal-itinerary-search
+    skillPath: skills/multimodal-itinerary-search/SKILL.md
+    summary: Compose air + rail itineraries across Europe via hubs, with the trvl MCP and Transitous.
+- source: local/project-repos
+  sourceType: ours-external
+  license: unspecified
+  vendor: false
+  skills:
+  - name: design-avatar
+    skillPath: ~/src/avatar/.claude/skills/design-avatar/SKILL.md
+    note: no git remote
+  - name: clonare-voci-robot
+    skillPath: ~/src/valetudo/.claude/skills/clonare-voci-robot/SKILL.md
+    note: no git remote
+  - name: home-assistant-manager
+    skillPath: ~/src/ha_config/.claude/skills/home-assistant-manager/SKILL.md
+    note: private Gitea
+- source: thekoma/mailfallback
+  sourceType: github
+  sourceUrl: https://github.com/thekoma/mailfallback.git
+  branch: main
+  ref: 8025633b07e6          # pinned; bump via reviewed PR
+  license: MIT
+  path: skills
+  vendor: true
+  skills:
+  - name: mailfallback-mcp
+    skillPath: skills/mailfallback-mcp/SKILL.md
+    skillFolderHash: 7972126ace37150d865dccf1be85d51a50a44459
+    summary: Search and read backed-up mail over MailFallBack's MCP server.
+- source: thekoma/slackfallback
+  sourceType: github
+  sourceUrl: https://github.com/thekoma/slackfallback.git
+  branch: main
+  ref: 76c2b167e3ce          # pinned; bump via reviewed PR
+  license: MIT
+  path: skills
+  vendor: true
+  skills:
+  - name: slackfallback-mcp
+    skillPath: skills/slackfallback-mcp/SKILL.md
+    skillFolderHash: ec289f57380989456de4eb61ed8a5b11a555da1c
+    summary: Search, brief and count over the archived Slack via slackfallback's MCP server.
+- source: openclaw/gogcli
+  sourceType: github
+  sourceUrl: https://github.com/openclaw/gogcli.git
+  branch: main
+  ref: 6d97417eade925947d721b4bb898815624310e44
+  license: MIT
+  path: .agents/skills
+  vendor: true
+  skills:
+  - name: crabbox
+    skillPath: .agents/skills/crabbox/SKILL.md
+    skillFolderHash: 6c0019cb94bb0409ff5db80264f1587fa89c2c79
+  - name: gog
+    skillPath: .agents/skills/gog/SKILL.md
+    skillFolderHash: 817db8365080b6f25ba9d1fa46cb6dde6d6bc3d1
+  - name: gog-admin
+    skillPath: .agents/skills/gog-admin/SKILL.md
+    skillFolderHash: 666508474a8565d1e5d787e8864360237e45f7c3
+  - name: gog-analytics
+    skillPath: .agents/skills/gog-analytics/SKILL.md
+    skillFolderHash: 105417906a31aeff7afa6cee26692de810d79f6d
+  - name: gog-appscript
+    skillPath: .agents/skills/gog-appscript/SKILL.md
+    skillFolderHash: 7c0fea3f5b7be8a5f5dc466af8a4b0f658b3afd7
+  - name: gog-calendar
+    skillPath: .agents/skills/gog-calendar/SKILL.md
+    skillFolderHash: 0aeab62e7ebafd7c3e618d7d82c2b7f3e1450e52
+  - name: gog-chat
+    skillPath: .agents/skills/gog-chat/SKILL.md
+    skillFolderHash: 87ee767d07634fe4b24c0bffecb12cb5c027e217
+  - name: gog-classroom
+    skillPath: .agents/skills/gog-classroom/SKILL.md
+    skillFolderHash: 517af69267939ab775545e13ad6df627e843dc6a
+  - name: gog-contacts
+    skillPath: .agents/skills/gog-contacts/SKILL.md
+    skillFolderHash: 651c7f633160589f82f8a52bcf36f76b64ca1af2
+  - name: gog-contacts-cleanup
+    skillPath: .agents/skills/gog-contacts-cleanup/SKILL.md
+    skillFolderHash: 409d4421ce7051ae08f806b65a75381214eb4066
+  - name: gog-docs
+    skillPath: .agents/skills/gog-docs/SKILL.md
+    skillFolderHash: 1003b913ac3944a0d153e1f8fadd50fbeb314dfd
+  - name: gog-drive
+    skillPath: .agents/skills/gog-drive/SKILL.md
+    skillFolderHash: e20c3e6602732202e7ae28c248f5802ede4b521f
+  - name: gog-drive-audit
+    skillPath: .agents/skills/gog-drive-audit/SKILL.md
+    skillFolderHash: 574d0aaebc557844e157224a27d51828012d5978
+  - name: gog-forms
+    skillPath: .agents/skills/gog-forms/SKILL.md
+    skillFolderHash: 3685b27c3aeb09e10297629f056b3d1aedeb2baf
+  - name: gog-gmail
+    skillPath: .agents/skills/gog-gmail/SKILL.md
+    skillFolderHash: 8151d9e560d850f1f5f2d9b53a1db464db77bb3c
+  - name: gog-groups
+    skillPath: .agents/skills/gog-groups/SKILL.md
+    skillFolderHash: 4a37bb7cd0067ccf7b03d8c6c44e3f2f620af1e1
+  - name: gog-inbox-triage
+    skillPath: .agents/skills/gog-inbox-triage/SKILL.md
+    skillFolderHash: 2fdc10ff0771587341bead11dc1355c6a23baf83
+  - name: gog-keep
+    skillPath: .agents/skills/gog-keep/SKILL.md
+    skillFolderHash: da517eb61d401e943e80835ac7ae4d4b3a08ac61
+  - name: gog-maps
+    skillPath: .agents/skills/gog-maps/SKILL.md
+    skillFolderHash: af092f51983f9135a8ef5edd3a2b9a5f46941857
+  - name: gog-meet
+    skillPath: .agents/skills/gog-meet/SKILL.md
+    skillFolderHash: 927ff9a507bf41d200aa9c0260c51902529bb321
+  - name: gog-meeting-prep
+    skillPath: .agents/skills/gog-meeting-prep/SKILL.md
+    skillFolderHash: 7776e78778a85b459d8db5395a585df0bddff226
+  - name: gog-people
+    skillPath: .agents/skills/gog-people/SKILL.md
+    skillFolderHash: 8460bbcbbd099198720818ff00d60b30c71ab7ca
+  - name: gog-photos
+    skillPath: .agents/skills/gog-photos/SKILL.md
+    skillFolderHash: 978dfc7ae3489c1339cb4413414b54930542066c
+  - name: gog-save-attachments
+    skillPath: .agents/skills/gog-save-attachments/SKILL.md
+    skillFolderHash: 6cfcdf5012efcf7c3c3d4ca817faa74c2a07861f
+  - name: gog-searchconsole
+    skillPath: .agents/skills/gog-searchconsole/SKILL.md
+    skillFolderHash: aa588b2506d41838b3a837d5586934adf48280b8
+  - name: gog-sheets
+    skillPath: .agents/skills/gog-sheets/SKILL.md
+    skillFolderHash: 7bbc7b036ec52b46ca0ebc108aa7c68de1e83e7f
+  - name: gog-sites
+    skillPath: .agents/skills/gog-sites/SKILL.md
+    skillFolderHash: f47f8027090bf8f5e5add355354563655285c3c9
+  - name: gog-slides
+    skillPath: .agents/skills/gog-slides/SKILL.md
+    skillFolderHash: e37651eb13f128e05b52796637d1fd2342a03ea5
+  - name: gog-tasks
+    skillPath: .agents/skills/gog-tasks/SKILL.md
+    skillFolderHash: 0b00f8d51e0a9e7a8bb2bacb9bebe5564fa542a5
+  - name: gog-weekly-digest
+    skillPath: .agents/skills/gog-weekly-digest/SKILL.md
+    skillFolderHash: c6476cb6c4f74cb10c482f4c3a3f6744cbeebc0d
+  - name: gog-youtube
+    skillPath: .agents/skills/gog-youtube/SKILL.md
+    skillFolderHash: dc43a6192683e70d05733629ff798e7ae0ee7a3b
+- source: Leonxlnx/taste-skill
+  sourceType: github
+  sourceUrl: https://github.com/Leonxlnx/taste-skill.git
+  branch: main
+  ref: f6b76575f949707b4e3c37cd86cb44b0b98643e8
+  license: MIT
+  path: skills
+  vendor: true
+  skills:
+  - name: design-taste-frontend
+    skillPath: skills/taste-skill/SKILL.md
+    skillFolderHash: 90f92ba7a3ce514cf85a2809583712dbd14106ea
+- source: coderabbitai/skills
+  sourceType: github
+  sourceUrl: https://github.com/coderabbitai/skills.git
+  branch: main
+  ref: 45bd1ae2c471          # pinned; bump via reviewed PR
+  license: MIT
+  path: skills
+  vendor: true
+  skills:
+  - name: autofix
+    skillPath: skills/autofix/SKILL.md
+    skillFolderHash: a1c5f41630809f6007880e73708889b400725037
+  - name: code-review
+    skillPath: skills/code-review/SKILL.md
+    skillFolderHash: 4316113bd7b5f1315a9b3a51bf0bb2e8f56e5da8
+- source: vercel-labs/skills
+  sourceType: github
+  sourceUrl: https://github.com/vercel-labs/skills.git
+  branch: main
+  ref: b716f9dc2ba36b6aa8f0080615e5a3a6caeac63b
+  license: MIT
+  path: skills
+  vendor: true
+  skills:
+  - name: find-skills
+    skillPath: skills/find-skills/SKILL.md
+    skillFolderHash: 76a98a285cb0434f3d39e1a873823556330e398b
+- source: awesome-skills/code-review-skill
+  sourceType: github
+  sourceUrl: https://github.com/awesome-skills/code-review-skill.git
+  branch: main
+  ref: 4850184dfd77
+  license: MIT
+  path: .
+  vendor: true
+  skills:
+  - name: code-review-skill
+    skillPath: SKILL.md
+- source: nraford7/Narrative-Engine
+  sourceType: github
+  sourceUrl: https://github.com/nraford7/Narrative-Engine.git
+  branch: master
+  ref: cbdd25777f17
+  license: NONE
+  path: .
+  vendor: false
+  skills:
+  - name: Narrative-Engine
+    skillPath: SKILL.md
